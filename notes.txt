@@ -1,0 +1,9 @@
+TODO:
+
+Add audio player interface
+        add audio resources
+        Change Mail icon to play
+
+
+Add images
+        add image resources
