@@ -1,5 +1,11 @@
 TODO:
 
+Current commit:
+        get the MediaPlayer service to keep playing 
+        -rotate events
+        -go to different activities
+        -lock the screen
+
 Add audio player interface
         add audio resources
         Change Mail icon to play
@@ -7,3 +13,5 @@ Add audio player interface
 
 Add images
         add image resources
+
+change package name

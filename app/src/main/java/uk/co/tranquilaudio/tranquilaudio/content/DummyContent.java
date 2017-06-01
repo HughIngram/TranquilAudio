@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.co.tranquilaudio.tranquilaudio.R;
+
 /**
  * Helper class for providing sample content for user interfaces created by
  * Android template wizards.
@@ -26,21 +28,17 @@ public class DummyContent {
     private static final int COUNT = 5;
 
     static {
-        // TODO put dummy data in xml
-        addItem(new Scene("1", "Reigate Hill, England", makeDetails(1)) {});
-        addItem(new Scene("2", "Redhill, England", makeDetails(2)) {});
-        addItem(new Scene("3", "Aylestone Meadows, Leicester, England", makeDetails(3)) {});
-        addItem(new Scene("4", "Foxton Lochs, Leicestershire, England", makeDetails(4)) {});
-        addItem(new Scene("5", "Box Hill, England", makeDetails(5)) {});
+        // TODO put dummy data strings in xml
+        addItem(new Scene("1", "Reigate Hill, England", makeDetails(1), R.raw.sound_clip_1));
+        addItem(new Scene("2", "Redhill, England", makeDetails(2), R.raw.sound_clip_1));
+        addItem(new Scene("3", "Aylestone Meadows, Leicester, England", makeDetails(3), R.raw.sound_clip_1));
+        addItem(new Scene("4", "Foxton Lochs, Leicestershire, England", makeDetails(4), R.raw.sound_clip_1));
+        addItem(new Scene("5", "Box Hill, England", makeDetails(5), R.raw.sound_clip_1));
     }
 
     private static void addItem(Scene item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
-    }
-
-    private static Scene createDummyItem(int position) {
-        return new Scene(String.valueOf(position), "Item " + position, makeDetails(position));
     }
 
     private static String makeDetails(int position) {

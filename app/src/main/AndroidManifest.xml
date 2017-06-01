@@ -28,6 +28,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.co.tranquilaudio.tranquilaudio.SceneListActivity" />
         </activity>
+        <service android:name=".AudioPlayerService"/>
     </application>
 
 </manifest>

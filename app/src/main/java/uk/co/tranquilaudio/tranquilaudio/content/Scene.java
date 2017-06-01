@@ -1,22 +1,27 @@
 package uk.co.tranquilaudio.tranquilaudio.content;
 
+import android.support.annotation.IdRes;
+import android.support.annotation.RawRes;
+
 /**
  * A dummy item representing a piece of content.
  */
-public class Scene {
+public final class Scene {
 
     public final String id;
     public final String content;
     public final String details;
 
+    @RawRes int audioResource;
+
     // TODO:
-    // audio file path? should go in /res
     // image file path
 
-    public Scene(String id, String content, String details) {
+    public Scene(String id, String content, String details, @RawRes int audioResource) {
         this.id = id;
         this.content = content;
         this.details = details;
+        this.audioResource = audioResource;
     }
 
     @Override
