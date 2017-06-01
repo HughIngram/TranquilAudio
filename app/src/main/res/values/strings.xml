@@ -1,4 +1,19 @@
 <resources>
     <string name="app_name">Tranquil Audio</string>
     <string name="title_scene_detail">Scene Detail</string>
+
+    <string name="scene_title_1">Reigate Hill, England</string>
+    <string name="scene_title_2">Redhill, England</string>
+    <string name="scene_title_3">Aylestone Meadows, Leicester, England</string>
+    <string name="scene_title_4">Foxton Lochs, Leicestershire, England</string>
+    <string name="scene_title_5">Box Hill, England</string>
+
+    <string name="scene_details_1">
+        This is the description for an audio scene.
+        test test test
+        test test test
+        test test test
+        test test test
+    </string>
+
 </resources>

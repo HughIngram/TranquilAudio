@@ -9,9 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import uk.co.tranquilaudio.tranquilaudio.content.DummyContent;
-import uk.co.tranquilaudio.tranquilaudio.content.Scene;
-
 /**
  * A fragment representing a single Scene detail screen.
  * This fragment is either contained in a {@link SceneListActivity}
@@ -38,17 +35,17 @@ public class SceneDetailFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final ContentLoader loader = new ContentLoader(this.getContext());
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            mItem = loader.getItemMap().get(getArguments().getString(ARG_ITEM_ID));
 
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            final Activity activity = this.getActivity();
+            final CollapsingToolbarLayout appBarLayout
+                    = (CollapsingToolbarLayout) activity
+                    .findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
                 appBarLayout.setTitle(mItem.content);
             }
@@ -56,9 +53,10 @@ public class SceneDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.scene_detail, container, false);
+    public View onCreateView(final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.scene_detail, container, false);
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {

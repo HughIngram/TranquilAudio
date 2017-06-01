@@ -1,4 +1,4 @@
-package uk.co.tranquilaudio.tranquilaudio.content;
+package uk.co.tranquilaudio.tranquilaudio;
 
 import android.support.annotation.IdRes;
 import android.support.annotation.RawRes;

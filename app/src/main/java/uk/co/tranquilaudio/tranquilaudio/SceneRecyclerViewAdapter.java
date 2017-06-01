@@ -11,55 +11,61 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import uk.co.tranquilaudio.tranquilaudio.content.Scene;
-
 /**
- * Created by hugh on 25/05/17.
+ * Adapter for Scene elements.
  */
-public class SceneRecyclerViewAdapter
+final class SceneRecyclerViewAdapter
         extends RecyclerView.Adapter<SceneRecyclerViewAdapter.ViewHolder> {
 
-    private SceneListActivity sceneListActivity;
-    //TODO refactor
-    final SceneListActivity activity;
+    private final SceneListActivity sceneListActivity;
     private final List<Scene> mValues;
 
-    public SceneRecyclerViewAdapter(
-            SceneListActivity sceneListActivity, List<Scene> items, SceneListActivity activity) {
+    /**
+     * Constructor.
+     * @param sceneListActivity the holding activity.
+     * @param items scene items.
+     */
+    SceneRecyclerViewAdapter(final SceneListActivity sceneListActivity,
+                             final List<Scene> items) {
         this.sceneListActivity = sceneListActivity;
         mValues = items;
-        this.activity = activity;
     }
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+    public ViewHolder onCreateViewHolder(final ViewGroup parent,
+                                         final int viewType) {
+        final View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.scene_list_content, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (activity.mTwoPane) {
-                    Bundle arguments = new Bundle();
-                    arguments.putString(SceneDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-                    SceneDetailFragment fragment = new SceneDetailFragment();
+            public void onClick(final View v) {
+                if (sceneListActivity.isTwoPane()) {
+                    final Bundle arguments = new Bundle();
+                    arguments.putString(
+                            SceneDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                    final SceneDetailFragment fragment
+                            = new SceneDetailFragment();
                     fragment.setArguments(arguments);
-                    sceneListActivity.getSupportFragmentManager().beginTransaction()
+                    sceneListActivity
+                            .getSupportFragmentManager().beginTransaction()
                             .replace(R.id.scene_detail_container, fragment)
                             .commit();
                 } else {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context, SceneDetailActivity.class);
-                    intent.putExtra(SceneDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                    final Context context = v.getContext();
+                    final Intent intent
+                            = new Intent(context, SceneDetailActivity.class);
+                    intent.putExtra(
+                            SceneDetailFragment.ARG_ITEM_ID, holder.mItem.id);
 
                     context.startActivity(intent);
                 }
@@ -72,13 +78,17 @@ public class SceneRecyclerViewAdapter
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public Scene mItem;
+    /**
+     * View holder for list items.
+     */
+    final class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ViewHolder(View view) {
+        private final View mView;
+        private final TextView mIdView;
+        private final TextView mContentView;
+        private Scene mItem;
+
+        ViewHolder(final View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.id);

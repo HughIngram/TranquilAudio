@@ -15,7 +15,7 @@ import android.util.Log;
 // as both a 'started' and a 'bound' service.
 // the service will need to be stopped manually.
 /**
- * Wrapper class for the Android MediaPlayer
+ * Wrapper class for the Android MediaPlayer.
  */
 public final class AudioPlayerService extends Service {
 
@@ -71,7 +71,8 @@ public final class AudioPlayerService extends Service {
 
     @Override
     public void onDestroy() {
-        mediaPlayer.release();
+        // how
+//        mediaPlayer.release();
     }
 
     private void pausePlay() {

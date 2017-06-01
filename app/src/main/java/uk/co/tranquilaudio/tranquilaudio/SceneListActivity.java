@@ -13,9 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 
-
-import uk.co.tranquilaudio.tranquilaudio.content.DummyContent;
-
 /**
  * An activity representing a list of SceneItems. This activity
  * has different presentations for handset and tablet-size devices. On
@@ -24,36 +21,38 @@ import uk.co.tranquilaudio.tranquilaudio.content.DummyContent;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class SceneListActivity extends AppCompatActivity implements ServiceConnection {
+public final class SceneListActivity
+        extends AppCompatActivity implements ServiceConnection {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    public boolean mTwoPane;    // TODO refactor this should not be public
-
+    private boolean isTwoPane;
     private AudioPlayerService audioPlayerService;
-
+    private ContentLoader contentLoader;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scene_list);
+        contentLoader = new ContentLoader(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), AudioPlayerService.class);
+                final Intent intent = new Intent(
+                        getApplicationContext(), AudioPlayerService.class);
                 startService(intent);
             }
         });
 
-        View recyclerView = findViewById(R.id.scene_list);
+        final View recyclerView = findViewById(R.id.scene_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
@@ -62,7 +61,7 @@ public class SceneListActivity extends AppCompatActivity implements ServiceConne
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
             // activity should be in two-pane mode.
-            mTwoPane = true;
+             isTwoPane = true;
         }
 
         final Intent mediaPlayerIntent = new Intent(this, AudioPlayerService.class);
@@ -71,19 +70,23 @@ public class SceneListActivity extends AppCompatActivity implements ServiceConne
         // TODO make a notification and bring the service to the fg
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SceneRecyclerViewAdapter(this, DummyContent.ITEMS, this));
+    private void setupRecyclerView(@NonNull final RecyclerView recyclerView) {
+        recyclerView.setAdapter(
+                new SceneRecyclerViewAdapter(this, contentLoader.getItems()));
     }
 
-    // TODO implement a BroadcastReciever
-
+    // TODO implement a BroadcastReceiver
 
     @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
+    public void onServiceConnected(final ComponentName name, final IBinder service) {
         audioPlayerService = ((AudioPlayerService.MyBinder) service).getService();
     }
 
     @Override
-    public void onServiceDisconnected(ComponentName name) {
+    public void onServiceDisconnected(final ComponentName name) {
+    }
+
+    boolean isTwoPane() {
+        return isTwoPane;
     }
 }

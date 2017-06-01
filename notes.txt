@@ -1,17 +1,32 @@
 TODO:
 
 Current commit:
+        just clean up without breaking anything.
+====================
+
+>BUG: rotating causes the list to be duplicated
+>BUG: first click on play does not start audio
+
+>change package name
+
+>add notification button
+
+>Add audio player interface
+        alternate play button
+        add audio resources
+        -implement loading of audio from different locations
+
+>Add images
+        add image resources
+
+
+>make a checkstyle rule set
+====================
+
+DONE:
         get the MediaPlayer service to keep playing 
         -rotate events
         -go to different activities
         -lock the screen
 
-Add audio player interface
-        add audio resources
         Change Mail icon to play
-
-
-Add images
-        add image resources
-
-change package name
