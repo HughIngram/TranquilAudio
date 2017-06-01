@@ -42,10 +42,11 @@ public final class SceneListActivity
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab
+                = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 final Intent intent = new Intent(
                         getApplicationContext(), AudioPlayerService.class);
                 startService(intent);
@@ -78,8 +79,8 @@ public final class SceneListActivity
     // TODO implement a BroadcastReceiver
 
     @Override
-    public void onServiceConnected(final ComponentName name, final IBinder service) {
-        audioPlayerService = ((AudioPlayerService.MyBinder) service).getService();
+    public void onServiceConnected(final ComponentName name, final IBinder binder) {
+        audioPlayerService = ((AudioPlayerService.MyBinder) binder).getService();
     }
 
     @Override

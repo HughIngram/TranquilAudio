@@ -3,7 +3,6 @@ package uk.co.tranquilaudio.tranquilaudio;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
@@ -16,25 +15,26 @@ import android.view.MenuItem;
  * item details are presented side-by-side with a list of items
  * in a {@link SceneListActivity}.
  */
-public class SceneDetailActivity extends AppCompatActivity {
+public final class SceneDetailActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scene_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab
+                = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                // TODO get the MediaPlayer from the otehr activity
+            public void onClick(final View view) {
+                // TODO get the MediaPlayer from the other activity
             }
         });
 
         // Show the Up button in the action bar.
-        ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -51,10 +51,10 @@ public class SceneDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            Bundle arguments = new Bundle();
+            final Bundle arguments = new Bundle();
             arguments.putString(SceneDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(SceneDetailFragment.ARG_ITEM_ID));
-            SceneDetailFragment fragment = new SceneDetailFragment();
+            final SceneDetailFragment fragment = new SceneDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.scene_detail_container, fragment)
@@ -63,8 +63,8 @@ public class SceneDetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        final int id = item.getItemId();
         if (id == android.R.id.home) {
             // This ID represents the Home or Up button. In the case of this
             // activity, the Up button is shown. For

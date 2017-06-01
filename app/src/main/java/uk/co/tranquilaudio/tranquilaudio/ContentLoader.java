@@ -19,42 +19,42 @@ final class ContentLoader {
     /**
      * An array of sample (dummy) items.
      */
-    private static final List<Scene> ITEMS = new ArrayList<>();
+    private final List<Scene> items = new ArrayList<>();
 
     /**
      * A map of sample (dummy) items, by ID.
      */
-    private static final Map<String, Scene> ITEM_MAP = new HashMap<>();
+    private final Map<String, Scene> itemMap = new HashMap<>();
 
     ContentLoader(final Context context) {
-        addItem(new Scene("1", context.getString(R.string.scene_title_1),
+        addItem(new Scene(1, context.getString(R.string.scene_title_1),
                 context.getString(R.string.scene_details_1),
                 R.raw.sound_clip_1));
-        addItem(new Scene("2", context.getString(R.string.scene_title_2),
+        addItem(new Scene(2, context.getString(R.string.scene_title_2),
                 context.getString(R.string.scene_details_1),
                 R.raw.sound_clip_1));
-        addItem(new Scene("3", context.getString(R.string.scene_title_3),
+        addItem(new Scene(3, context.getString(R.string.scene_title_3),
                 context.getString(R.string.scene_details_1),
                 R.raw.sound_clip_1));
-        addItem(new Scene("4", context.getString(R.string.scene_title_4),
+        addItem(new Scene(4, context.getString(R.string.scene_title_4),
                 context.getString(R.string.scene_details_1),
                 R.raw.sound_clip_1));
-        addItem(new Scene("5", context.getString(R.string.scene_title_5),
+        addItem(new Scene(5, context.getString(R.string.scene_title_5),
                 context.getString(R.string.scene_details_1),
                 R.raw.sound_clip_1));
     }
 
     List<Scene> getItems() {
-        return ITEMS;
+        return items;
     }
 
     Map<String, Scene> getItemMap() {
-        return ITEM_MAP;
+        return itemMap;
     }
 
-    private static void addItem(final Scene item) {
-        ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+    private void addItem(final Scene item) {
+        items.add(item);
+        itemMap.put(item.getIdString(), item);
     }
 
 }

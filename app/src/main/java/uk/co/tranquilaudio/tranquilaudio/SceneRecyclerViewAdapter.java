@@ -18,17 +18,17 @@ final class SceneRecyclerViewAdapter
         extends RecyclerView.Adapter<SceneRecyclerViewAdapter.ViewHolder> {
 
     private final SceneListActivity sceneListActivity;
-    private final List<Scene> mValues;
+    private final List<Scene> scenes;
 
     /**
      * Constructor.
      * @param sceneListActivity the holding activity.
-     * @param items scene items.
+     * @param scenes scene scenes.
      */
     SceneRecyclerViewAdapter(final SceneListActivity sceneListActivity,
-                             final List<Scene> items) {
+                             final List<Scene> scenes) {
         this.sceneListActivity = sceneListActivity;
-        mValues = items;
+        this.scenes = scenes;
     }
 
 
@@ -42,9 +42,9 @@ final class SceneRecyclerViewAdapter
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mItem = scenes.get(position);
+        holder.mIdView.setText(scenes.get(position).getIdString());
+        holder.mContentView.setText(scenes.get(position).content);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +52,8 @@ final class SceneRecyclerViewAdapter
                 if (sceneListActivity.isTwoPane()) {
                     final Bundle arguments = new Bundle();
                     arguments.putString(
-                            SceneDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                            SceneDetailFragment.ARG_ITEM_ID,
+                            holder.mItem.getIdString());
                     final SceneDetailFragment fragment
                             = new SceneDetailFragment();
                     fragment.setArguments(arguments);
@@ -65,7 +66,8 @@ final class SceneRecyclerViewAdapter
                     final Intent intent
                             = new Intent(context, SceneDetailActivity.class);
                     intent.putExtra(
-                            SceneDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                            SceneDetailFragment.ARG_ITEM_ID,
+                            holder.mItem.getIdString());
 
                     context.startActivity(intent);
                 }
@@ -74,8 +76,19 @@ final class SceneRecyclerViewAdapter
     }
 
     @Override
+    public long getItemId(final int position) {
+//        return scenes.get(position).getId();
+        return position;
+    }
+
+    @Override
     public int getItemCount() {
-        return mValues.size();
+        return scenes.size();
+    }
+
+    @Override
+    public int getItemViewType(final int position) {
+        return position;
     }
 
     /**

@@ -15,7 +15,7 @@ import android.widget.TextView;
  * in two-pane mode (on tablets) or a {@link SceneDetailActivity}
  * on handsets.
  */
-public class SceneDetailFragment extends Fragment {
+public final class SceneDetailFragment extends Fragment {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
