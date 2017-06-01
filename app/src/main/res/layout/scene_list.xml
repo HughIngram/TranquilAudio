@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scene_list"
-    android:name="uk.co.tranquilaudio.tranquilaudio.SceneListFragment"
+    android:name="com.tranquilaudio.tranquilaudio_app.SceneListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context="uk.co.tranquilaudio.tranquilaudio.SceneListActivity"
+    tools:context="com.tranquilaudio.tranquilaudio_app.SceneListActivity"
     tools:listitem="@layout/scene_list_content" />

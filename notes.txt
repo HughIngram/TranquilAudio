@@ -1,18 +1,15 @@
 TODO:
 
 Current commit:
-        just clean up without breaking anything.
-====================
-
->BUG: rotating causes the list to be duplicated
->BUG: first click on play does not start audio
-
 >change package name
+
+====================
 
 >add notification button
 
 >Add audio player interface
         alternate play button
+        -implement other play button
         add audio resources
         -implement loading of audio from different locations
 
@@ -30,3 +27,6 @@ DONE:
         -lock the screen
 
         Change Mail icon to play
+
+>BUG: rotating causes the list to be duplicated
+>BUG: first click on play does not start audio

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="uk.co.tranquilaudio.tranquilaudio">
+    package="com.tranquilaudio.tranquilaudio_app">
 
     <application
         android:allowBackup="true"
@@ -26,7 +26,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="uk.co.tranquilaudio.tranquilaudio.SceneListActivity" />
+                android:value="com.tranquilaudio.tranquilaudio_app.SceneListActivity" />
         </activity>
         <service android:name=".AudioPlayerService"/>
     </application>

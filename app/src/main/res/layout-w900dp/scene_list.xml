@@ -9,7 +9,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context="uk.co.tranquilaudio.tranquilaudio.SceneListActivity">
+    tools:context="com.tranquilaudio.tranquilaudio_app.SceneListActivity">
 
     <!--
     This layout is a two-pane layout for the SceneItems
@@ -20,13 +20,13 @@
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/scene_list"
-        android:name="uk.co.tranquilaudio.tranquilaudio.SceneListFragment"
+        android:name="com.tranquilaudio.tranquilaudio_app.SceneListFragment"
         android:layout_width="@dimen/item_width"
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context="uk.co.tranquilaudio.tranquilaudio.SceneListActivity"
+        tools:context="com.tranquilaudio.tranquilaudio_app.SceneListActivity"
         tools:listitem="@layout/scene_list_content" />
 
     <FrameLayout
