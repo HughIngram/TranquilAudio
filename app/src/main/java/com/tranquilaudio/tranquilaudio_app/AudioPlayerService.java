@@ -14,6 +14,22 @@ import android.support.annotation.RawRes;
  */
 public final class AudioPlayerService extends Service {
 
+    /**
+     * The intent filter for pause / play status notifications.
+     */
+    public static final String NOTIFICATION
+            = "com.tranquilaudio.tranquiladuio_app";
+
+    /**
+     * The intent extras key for NOTIFICATION.
+     */
+    public static final String NOTIFICATION_KEY = "STATUS";
+
+    /**
+     * Possible statuses for Media playback.
+     */
+    enum PlayerStatus { PAUSED, PLAYING }
+
     private static final String TAG = "AudioPlayerService";
 
     private MediaPlayer mediaPlayer;
@@ -22,8 +38,6 @@ public final class AudioPlayerService extends Service {
 
     private final IBinder mBinder = new MyBinder();
 
-    // TODO communicate from the activity -> service with start command
-    // communicate from service -> activity with broadcast recievers
     @Override
     public int onStartCommand(final Intent intent, final int flags,
                               final int startId) {
@@ -46,25 +60,31 @@ public final class AudioPlayerService extends Service {
         }
     }
 
-    // TODO private method to broadcast state of teh MediaPlayer
-    // so that it can be displayed in the UI
-
     @Override
     public void onDestroy() {
         // can I call this without breaking playback?
 //        mediaPlayer.release();
     }
 
-    private void pausePlay() {
+    /**
+     * Pause or play the Audio track.
+     *
+     * @return the media playback status.
+     */
+    public void pausePlay() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
+            publishResult(PlayerStatus.PAUSED);
         } else {
             mediaPlayer.start();
+            publishResult(PlayerStatus.PLAYING);
         }
     }
 
-    private boolean isPlaying() {
-        return mediaPlayer.isPlaying();
+    private void publishResult(final PlayerStatus status) {
+        final Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra(NOTIFICATION_KEY, status);
+        sendBroadcast(intent);
     }
 
 }

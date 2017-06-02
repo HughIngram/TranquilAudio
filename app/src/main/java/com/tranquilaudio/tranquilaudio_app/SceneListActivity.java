@@ -1,8 +1,10 @@
 package com.tranquilaudio.tranquilaudio_app;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -31,6 +33,23 @@ public final class SceneListActivity
     private boolean isTwoPane;
     private AudioPlayerService audioPlayerService;
     private ContentLoader contentLoader;
+    private FloatingActionButton fab;
+
+    private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final AudioPlayerService.PlayerStatus status
+                    = (AudioPlayerService.PlayerStatus) intent.getExtras()
+                    .get(AudioPlayerService.NOTIFICATION_KEY);
+            if (status == AudioPlayerService.PlayerStatus.PLAYING) {
+                fab.setImageDrawable(getResources()
+                        .getDrawable(android.R.drawable.ic_media_pause));
+            } else {
+                fab.setImageDrawable(getResources()
+                        .getDrawable(android.R.drawable.ic_media_play));
+            }
+        }
+    };
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -42,14 +61,11 @@ public final class SceneListActivity
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        final FloatingActionButton fab
-                = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                final Intent intent = new Intent(
-                        getApplicationContext(), AudioPlayerService.class);
-                startService(intent);
+                fabClick();
             }
         });
 
@@ -66,9 +82,16 @@ public final class SceneListActivity
         }
 
         final Intent mediaPlayerIntent = new Intent(this, AudioPlayerService.class);
-        mediaPlayerIntent.setAction("PLAY");
         bindService(mediaPlayerIntent, this, Context.BIND_AUTO_CREATE);
-        // TODO make a notification and bring the service to the fg
+
+        registerReceiver(playerStatusReceiver,
+                new IntentFilter(AudioPlayerService.NOTIFICATION));
+    }
+
+    private void fabClick() {
+        final Intent intent = new Intent(
+                getApplicationContext(), AudioPlayerService.class);
+        startService(intent);
     }
 
     private void setupRecyclerView(@NonNull final RecyclerView recyclerView) {
@@ -76,11 +99,11 @@ public final class SceneListActivity
                 new SceneRecyclerViewAdapter(this, contentLoader.getItems()));
     }
 
-    // TODO implement a BroadcastReceiver
-
     @Override
-    public void onServiceConnected(final ComponentName name, final IBinder binder) {
-        audioPlayerService = ((AudioPlayerService.MyBinder) binder).getService();
+    public void onServiceConnected(final ComponentName name,
+                                   final IBinder binder) {
+        audioPlayerService
+                = ((AudioPlayerService.MyBinder) binder).getService();
     }
 
     @Override
