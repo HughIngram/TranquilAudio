@@ -1,7 +1,13 @@
-TODO:
-
 Current commit:
->add notification button
+    >Feature:
+
+    >Done:
+
+
+    >BUGS to fix in this commit:
+
+
+    >NOTES:
 
 ====================
 
@@ -13,6 +19,23 @@ Current commit:
 >Add images
         add image resources
 
+>figure out how to handle stopping playback completely
+    -remove the notification
+    -should there be a stop button anywhere?
+
+>Feature: improve notification controls
+    -appears only after hitting play
+    -has a pause / play button
+    -has a close button
+    -lock screen control
+    -Add more metadata to notification - info about current track, album art?
+        use the MediaStyle metadata fields
+    -change lifecycle / behaviour - the notification should not show if:
+        >the activity is in foreground and nothing is playing
+        >user presses 'x' button on notification
+        >user leaves activity with nothing playing
+
+>sleep timer
 ====================
 ====================
 
@@ -30,3 +53,10 @@ Change Mail icon to play
 >make a checkstyle rule set
 >change package name
 >alternate play button
+
+    https://stackoverflow.com/questions/23443946/music-player-control-in-notification
+    https://stackoverflow.com/questions/22066531/hide-notification-of-foreground-service-while-activity-is-visible
+
+>BUG: leaving the app with audio playing, then resuming, will show the wrong
+        status in play button.
+

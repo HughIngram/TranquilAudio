@@ -38,18 +38,23 @@ public final class SceneListActivity
     private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            final AudioPlayerService.PlayerStatus status
+            final AudioPlayerService.PlayerStatus playerStatus
                     = (AudioPlayerService.PlayerStatus) intent.getExtras()
-                    .get(AudioPlayerService.NOTIFICATION_KEY);
-            if (status == AudioPlayerService.PlayerStatus.PLAYING) {
-                fab.setImageDrawable(getResources()
-                        .getDrawable(android.R.drawable.ic_media_pause));
-            } else {
-                fab.setImageDrawable(getResources()
-                        .getDrawable(android.R.drawable.ic_media_play));
-            }
+                    .get(AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
+            updatePausePlayButton(playerStatus);
         }
     };
+
+    private void updatePausePlayButton(
+            final AudioPlayerService.PlayerStatus playerStatus) {
+        if (playerStatus == AudioPlayerService.PlayerStatus.PLAYING) {
+            fab.setImageDrawable(getResources()
+                    .getDrawable(android.R.drawable.ic_media_pause));
+        } else {
+            fab.setImageDrawable(getResources()
+                    .getDrawable(android.R.drawable.ic_media_play));
+        }
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -81,16 +86,24 @@ public final class SceneListActivity
              isTwoPane = true;
         }
 
-        final Intent mediaPlayerIntent = new Intent(this, AudioPlayerService.class);
+        final Intent mediaPlayerIntent
+                = new Intent(this, AudioPlayerService.class);
+        mediaPlayerIntent.setAction(AudioPlayerService.PAUSE_ACTION);
         bindService(mediaPlayerIntent, this, Context.BIND_AUTO_CREATE);
 
-        registerReceiver(playerStatusReceiver,
-                new IntentFilter(AudioPlayerService.NOTIFICATION));
+        registerReceiver(playerStatusReceiver, new IntentFilter(
+                AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
     }
 
     private void fabClick() {
         final Intent intent = new Intent(
                 getApplicationContext(), AudioPlayerService.class);
+        if (audioPlayerService.getStatus()
+                == AudioPlayerService.PlayerStatus.PLAYING) {
+            intent.setAction(AudioPlayerService.PAUSE_ACTION);
+        } else {
+            intent.setAction(AudioPlayerService.PLAY_ACTION);
+        }
         startService(intent);
     }
 
