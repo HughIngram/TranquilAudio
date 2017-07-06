@@ -9,8 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
+import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
+
+
 /**
- * A fragment representing a single Scene detail screen.
+ * A fragment representing a single AudioScene detail screen.
  * This fragment is either contained in a {@link SceneListActivity}
  * in two-pane mode (on tablets) or a {@link SceneDetailActivity}
  * on handsets.
@@ -23,9 +29,9 @@ public final class SceneDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
 
     /**
-     * The dummy content this fragment is presenting.
+     * The scene this fragment is presenting.
      */
-    private Scene mItem;
+    private AudioScene mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -37,17 +43,17 @@ public final class SceneDetailFragment extends Fragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final ContentLoader loader = new ContentLoader(this.getContext());
-
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            mItem = loader.getItemMap().get(getArguments().getString(ARG_ITEM_ID));
+            final AudioSceneLoader loader = new AudioSceneLoaderImpl(
+                    new SystemWrapperForModelImpl(this.getContext()));
+            mItem = loader.loadScene(getArguments().getLong(ARG_ITEM_ID));
 
             final Activity activity = this.getActivity();
             final CollapsingToolbarLayout appBarLayout
                     = (CollapsingToolbarLayout) activity
                     .findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+                appBarLayout.setTitle(mItem.getTitle());
             }
         }
     }
@@ -60,7 +66,7 @@ public final class SceneDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.scene_detail)).setText(mItem.details);
+            ((TextView) rootView.findViewById(R.id.scene_detail)).setText(mItem.getDetails());
         }
 
         return rootView;

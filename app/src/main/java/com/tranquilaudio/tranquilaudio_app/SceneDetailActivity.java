@@ -10,7 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 /**
- * An activity representing a single Scene detail screen. This
+ * An activity representing a single AudioScene detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
  * in a {@link SceneListActivity}.
@@ -52,8 +52,8 @@ public final class SceneDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             final Bundle arguments = new Bundle();
-            arguments.putString(SceneDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(SceneDetailFragment.ARG_ITEM_ID));
+            arguments.putLong(SceneDetailFragment.ARG_ITEM_ID,
+                    getIntent().getLongExtra(SceneDetailFragment.ARG_ITEM_ID, 1));
             final SceneDetailFragment fragment = new SceneDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

@@ -9,16 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
+
 import java.util.List;
 
 /**
- * Adapter for Scene elements.
+ * Adapter for AudioScene elements.
  */
 final class SceneRecyclerViewAdapter
         extends RecyclerView.Adapter<SceneRecyclerViewAdapter.ViewHolder> {
 
     private final SceneListActivity sceneListActivity;
-    private final List<Scene> scenes;
+    private final List<AudioScene> scenes;
 
     /**
      * Constructor.
@@ -26,7 +28,7 @@ final class SceneRecyclerViewAdapter
      * @param scenes scene scenes.
      */
     SceneRecyclerViewAdapter(final SceneListActivity sceneListActivity,
-                             final List<Scene> scenes) {
+                             final List<AudioScene> scenes) {
         this.sceneListActivity = sceneListActivity;
         this.scenes = scenes;
     }
@@ -43,17 +45,17 @@ final class SceneRecyclerViewAdapter
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = scenes.get(position);
-        holder.mIdView.setText(scenes.get(position).getIdString());
-        holder.mContentView.setText(scenes.get(position).content);
+        holder.mIdView.setText(Long.toString(scenes.get(position).getId()));
+        holder.mContentView.setText(scenes.get(position).getTitle());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 if (sceneListActivity.isTwoPane()) {
                     final Bundle arguments = new Bundle();
-                    arguments.putString(
+                    arguments.putLong(
                             SceneDetailFragment.ARG_ITEM_ID,
-                            holder.mItem.getIdString());
+                            holder.mItem.getId());
                     final SceneDetailFragment fragment
                             = new SceneDetailFragment();
                     fragment.setArguments(arguments);
@@ -67,8 +69,7 @@ final class SceneRecyclerViewAdapter
                             = new Intent(context, SceneDetailActivity.class);
                     intent.putExtra(
                             SceneDetailFragment.ARG_ITEM_ID,
-                            holder.mItem.getIdString());
-
+                            holder.mItem.getId());
                     context.startActivity(intent);
                 }
             }
@@ -77,7 +78,6 @@ final class SceneRecyclerViewAdapter
 
     @Override
     public long getItemId(final int position) {
-//        return scenes.get(position).getId();
         return position;
     }
 
@@ -99,13 +99,13 @@ final class SceneRecyclerViewAdapter
         private final View mView;
         private final TextView mIdView;
         private final TextView mContentView;
-        private Scene mItem;
+        private AudioScene mItem;
 
         ViewHolder(final View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mContentView = (TextView) view.findViewById(R.id.title);
         }
 
         @Override

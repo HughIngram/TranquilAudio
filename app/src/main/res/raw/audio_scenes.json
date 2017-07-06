@@ -1,0 +1,32 @@
+[
+    {
+      "id":1,
+      "title":"Reigate Hill, England",
+      "details":"Recorded atop Reigate Hill on a still and sunny afternoon",
+      "audioResource":"sound_clip_2"
+    },
+    {
+      "id":2,
+      "title":"Redhill, England",
+      "details":"description description description",
+      "audioResource":"sound_clip_1"
+    },
+    {
+      "id":3,
+      "title":"Aylestone Meadows, Leicester, England",
+      "details":"description description description",
+      "audioResource":"sound_clip_2"
+    },
+    {
+      "id":4,
+      "title":"Foxton Locks, Leicestershire, England",
+      "details":"description description description",
+      "audioResource":"sound_clip_1"
+    },
+    {
+      "id":5,
+      "title":"Box Hill, England",
+      "details":"description description description",
+      "audioResource":"sound_clip_2"
+    }
+]

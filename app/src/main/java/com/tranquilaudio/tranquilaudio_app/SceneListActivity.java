@@ -1,19 +1,32 @@
 package com.tranquilaudio.tranquilaudio_app;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
+
+import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
+import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModel;
+import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An activity representing a list of SceneItems. This activity
@@ -32,7 +45,6 @@ public final class SceneListActivity
      */
     private boolean isTwoPane;
     private AudioPlayerService audioPlayerService;
-    private ContentLoader contentLoader;
     private FloatingActionButton fab;
 
     private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
@@ -60,7 +72,6 @@ public final class SceneListActivity
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scene_list);
-        contentLoader = new ContentLoader(this);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -108,8 +119,10 @@ public final class SceneListActivity
     }
 
     private void setupRecyclerView(@NonNull final RecyclerView recyclerView) {
-        recyclerView.setAdapter(
-                new SceneRecyclerViewAdapter(this, contentLoader.getItems()));
+        final SystemWrapperForModel sys = new SystemWrapperForModelImpl(this);
+        final AudioSceneLoader audioSceneLoader = new AudioSceneLoaderImpl(sys);
+        final List<AudioScene> scenes = audioSceneLoader.getSceneList();
+        recyclerView.setAdapter(new SceneRecyclerViewAdapter(this, scenes));
     }
 
     @Override

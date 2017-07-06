@@ -1,5 +1,10 @@
 Current commit:
     >Feature:
+    Play from a choice of different files from the list
+    -implement other play button
+    -add audio resources
+    -implement loading of audio from different locations
+    -explicitly sort the list of Scenes
 
     >Done:
 
@@ -8,13 +13,28 @@ Current commit:
 
 
     >NOTES:
+    -load files from the SD card
+    -directory of JSON files containing:
+        >path to audio file
+        >title of track
+        >etc
+     -in future this can directory can be the cache; an http service can put files there.
+    -move file storage to the internal part of the SD card, remove read / write permission
+    -if I want to have the audio files in internal storage, they will need to be downloaded
+    over REST - to have an app which can be deployed with no back-end, I'll need to switch
+    back to using the /raw folder
+            >commit the changes so far before reverting them, for the sake of reference.
+            >or just comment out the bit that reads from the file system
+
+    -put JSON in raw folder, as if it were a downloaded file.
+    -how am I going to store the audio location (in raw folder) as JSON??
+    -what will the behaviour of the play button be? What if a track is already playing,
+    then the user views the page for another track?
+        >the playing track fragment should show a pause/play button
+        >other tracks should show a play button to switch over to that one
 
 ====================
-
->Add audio player interface
-        -implement other play button
-        -add audio resources
-        -implement loading of audio from different locations
+>change checkstyle rules to not require comments on setters, getters, constructors
 
 >Add images
         add image resources
@@ -34,6 +54,9 @@ Current commit:
         >the activity is in foreground and nothing is playing
         >user presses 'x' button on notification
         >user leaves activity with nothing playing
+
+>implement http download service
+    -investigate the Repository pattern
 
 >sleep timer
 ====================

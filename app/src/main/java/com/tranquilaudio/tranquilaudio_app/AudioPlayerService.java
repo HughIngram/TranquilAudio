@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.session.MediaSessionManager;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.RawRes;
@@ -61,8 +62,8 @@ public final class AudioPlayerService extends Service {
     private MediaSessionManager mediaSessionManager;
     private MediaSessionCompat mediaSession;
 
-    @RawRes private static final int DEFAULT_AUDIO = com.tranquilaudio
-            .tranquilaudio_app.R.raw.sound_clip_1;
+    @RawRes private static final int DEFAULT_AUDIO =
+            com.tranquilaudio.tranquilaudio_app.R.raw.sound_clip_1;
 
     private final IBinder mBinder = new MyBinder();
 
@@ -80,8 +81,12 @@ public final class AudioPlayerService extends Service {
 
     @Override
     public IBinder onBind(final Intent intent) {
+//        @RawRes final int audioTrack = DEFAULT_AUDIO;
+        final String test = "sound_clip_1";
+        final Uri audioTrack = Uri.parse(
+                "android.resource://" + getPackageName() + "/raw/" + test);
         this.mediaPlayer
-                = MediaPlayer.create(getApplicationContext(), DEFAULT_AUDIO);
+                = MediaPlayer.create(getApplicationContext(), audioTrack);
         initMediaSession();
         startForeground(ONGOING_NOTIFICATION_ID,
                 buildNotification(PlayerStatus.PAUSED));
