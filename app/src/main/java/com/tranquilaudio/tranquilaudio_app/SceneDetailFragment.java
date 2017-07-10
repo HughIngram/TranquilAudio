@@ -46,7 +46,7 @@ public final class SceneDetailFragment extends Fragment {
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             final AudioSceneLoader loader = new AudioSceneLoaderImpl(
                     new SystemWrapperForModelImpl(this.getContext()));
-            mItem = loader.loadScene(getArguments().getLong(ARG_ITEM_ID));
+            mItem = loader.getScene(getArguments().getLong(ARG_ITEM_ID));
 
             final Activity activity = this.getActivity();
             final CollapsingToolbarLayout appBarLayout

@@ -9,13 +9,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Class to read from the Raw resources.
+ * Class to read Audio Scene metadata.
+ *
+ * Do not allow this class to expose where the metadata is stored.
  */
 public final class AudioSceneLoaderImpl implements AudioSceneLoader {
 
-//    private static final String SCENES_DIR = "/AudioScenes/";
-    @RawRes private static final int SCENES_INFO = R.raw.audio_scenes;
     private static final String TAG = "AudioSceneLoaderImpl";
+
+    @RawRes private static final int SCENES_INFO = R.raw.audio_scenes;
 
     private final SystemWrapperForModel system;
     private Gson gson;
@@ -68,7 +70,7 @@ public final class AudioSceneLoaderImpl implements AudioSceneLoader {
     */
 
     @Override
-    public AudioScene loadScene(final long patternId) {
+    public AudioScene getScene(final long patternId) {
         final ArrayList<AudioScene> scenes = getSceneList();
         for (AudioScene as : scenes) {
             if (as.getId() == patternId) {
@@ -76,10 +78,6 @@ public final class AudioSceneLoaderImpl implements AudioSceneLoader {
             }
         }
         return null;
-    }
-
-    AudioScene getDefaultScene() {
-        return loadScene(DEFAULT_SCENE_ID);
     }
 
 }

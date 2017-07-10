@@ -1,8 +1,14 @@
 package com.tranquilaudio.tranquilaudio_app.model;
 
 
+import android.content.Context;
+import android.net.Uri;
+
+
 /**
  * A dummy item representing a piece of title.
+ *
+ * Do not allow this class to expose where audio / image files are coming from.
  */
 public final class AudioScene {
 
@@ -11,28 +17,16 @@ public final class AudioScene {
     private final String details;
     private String audioResource;
 
-    // TODO:
-    // image file path
-
     public AudioScene(final long id, final String title, final String details,
                       final String audioResource) {
         this.id = id;
         this.title = title;
         this.details = details;
-        this.setAudioResource(audioResource);
+        this.audioResource = audioResource;
     }
 
     public long getId() {
         return id;
-    }
-
-    // TODO eliminate this - use getLong and putLong() for SceneDetailFragment
-    /**
-     * Get the ID as a String.
-     * @return the ID.
-     */
-    public String getIdString() {
-        return Long.toString(id);
     }
 
     public String getTitle() {
@@ -44,19 +38,14 @@ public final class AudioScene {
     }
 
     /**
-     * Get the file name of the audio resource (in res/raw)
-     * @return the audio resource file name.
+     * Get the URI of the audio file associated with this scene.
+     *
+     * @param context the context.
+     * @return the URI of the audio file.
      */
-    public String getAudioResource() {
-        return audioResource;
-    }
-
-    /**
-     * Set the file neame of the audio resource (in res/raw)
-     * @param audioResource the audio resource file name.
-     */
-    public void setAudioResource(final String audioResource) {
-        this.audioResource = audioResource;
+    public Uri getAudioURI(final Context context) {
+        return Uri.parse("android.resource://"
+                + context.getPackageName() + "/raw/" + audioResource);
     }
 
     @Override

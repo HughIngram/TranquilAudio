@@ -1,16 +1,14 @@
 Current commit:
-    >Feature:
-    Play from a choice of different files from the list
-    -implement other play button
-    -add audio resources
-    -implement loading of audio from different locations
+    >Feature: Play from a choice of different files from the list
     -explicitly sort the list of Scenes
 
     >Done:
-
+    -implement other play button
+    -add audio resources
+    -implement loading of audio from different locations
 
     >BUGS to fix in this commit:
-
+    - rotating SceneDetailActivity loses the title
 
     >NOTES:
     -load files from the SD card
@@ -18,7 +16,7 @@ Current commit:
         >path to audio file
         >title of track
         >etc
-     -in future this can directory can be the cache; an http service can put files there.
+    -in future this can directory can be the cache; an http service can put files there.
     -move file storage to the internal part of the SD card, remove read / write permission
     -if I want to have the audio files in internal storage, they will need to be downloaded
     over REST - to have an app which can be deployed with no back-end, I'll need to switch
@@ -32,9 +30,17 @@ Current commit:
     then the user views the page for another track?
         >the playing track fragment should show a pause/play button
         >other tracks should show a play button to switch over to that one
+        >SceneDetailFragment should behave similarly - or rather SceneListActivity
+        should change its behaviour depending on isTwoPane and the active list element
 
 ====================
+>Implement bottom bar media control
+
+>ensure the AudioPlayerService is decoupled from the location of media
+
 >change checkstyle rules to not require comments on setters, getters, constructors
+
+>handle audio focus
 
 >Add images
         add image resources
@@ -51,14 +57,17 @@ Current commit:
     -Add more metadata to notification - info about current track, album art?
         use the MediaStyle metadata fields
     -change lifecycle / behaviour - the notification should not show if:
-        >the activity is in foreground and nothing is playing
+        >the context is in foreground and nothing is playing
         >user presses 'x' button on notification
-        >user leaves activity with nothing playing
+        >user leaves context with nothing playing
+    -when the track changes, it will be necessary to publish the update.
 
 >implement http download service
     -investigate the Repository pattern
 
 >sleep timer
+
+>loop the tracks. Start each one at a random point in the recording.
 ====================
 ====================
 
@@ -78,7 +87,7 @@ Change Mail icon to play
 >alternate play button
 
     https://stackoverflow.com/questions/23443946/music-player-control-in-notification
-    https://stackoverflow.com/questions/22066531/hide-notification-of-foreground-service-while-activity-is-visible
+    https://stackoverflow.com/questions/22066531/hide-notification-of-foreground-service-while-context-is-visible
 
 >BUG: leaving the app with audio playing, then resuming, will show the wrong
         status in play button.

@@ -8,12 +8,6 @@ import java.util.List;
 public interface AudioSceneLoader {
 
     /**
-     * The default scene for when you hit play with nothing selected.
-     *
-     */
-    long DEFAULT_SCENE_ID = 1;
-
-    /**
      * Get the List of available patterns.
      * @return the list of patterns.
      */
@@ -23,10 +17,6 @@ public interface AudioSceneLoader {
      * Gets the given Audio Scene.
      * @param sceneId the scene ID.
      */
-    AudioScene loadScene(long sceneId);
-
-    // TODO open audio files
-
-    // TODO open image files
+    AudioScene getScene(long sceneId);
 
 }

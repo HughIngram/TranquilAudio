@@ -13,16 +13,16 @@ import java.io.InputStream;
  */
 public final class SystemWrapperForModelImpl implements SystemWrapperForModel {
 
-    private final Context activity;
+    private final Context context;
 
-    public SystemWrapperForModelImpl(final Context activity) {
-        this.activity = activity;
+    public SystemWrapperForModelImpl(final Context context) {
+        this.context = context;
     }
 
     @Override
     public String getStringFromRawResource(final @RawRes int resId) {
         try {
-            final InputStream is = activity.getResources().openRawResource(resId);
+            final InputStream is = context.getResources().openRawResource(resId);
             final String statesText = convertStreamToString(is);
             is.close();
             return statesText;
@@ -32,7 +32,8 @@ public final class SystemWrapperForModelImpl implements SystemWrapperForModel {
         }
     }
 
-    private String convertStreamToString(final InputStream is) throws IOException {
+    private String convertStreamToString(final InputStream is)
+            throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int i = is.read();
         while (i != -1) {

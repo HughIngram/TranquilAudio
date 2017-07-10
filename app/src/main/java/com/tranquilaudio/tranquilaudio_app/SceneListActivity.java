@@ -1,31 +1,26 @@
 package com.tranquilaudio.tranquilaudio_app;
 
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 
 import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
-import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
+import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModel;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,6 +52,7 @@ public final class SceneListActivity
         }
     };
 
+    // TODO eliminate the playerStatus field?  get playerstatus directly instead
     private void updatePausePlayButton(
             final AudioPlayerService.PlayerStatus playerStatus) {
         if (playerStatus == AudioPlayerService.PlayerStatus.PLAYING) {
@@ -104,6 +100,14 @@ public final class SceneListActivity
 
         registerReceiver(playerStatusReceiver, new IntentFilter(
                 AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (audioPlayerService != null) {
+            updatePausePlayButton(audioPlayerService.getStatus());
+        }
     }
 
     private void fabClick() {

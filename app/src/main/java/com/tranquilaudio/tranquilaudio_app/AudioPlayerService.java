@@ -11,19 +11,24 @@ import android.media.session.MediaSessionManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.RawRes;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
-// TODO this service should be run in the foreground
-// the service will need to be stopped manually.
+import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
+import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
+
+import java.io.IOException;
+
 /**
  * Wrapper class for the Android MediaPlayer.
  */
 public final class AudioPlayerService extends Service {
 
     /**
-     * The intent action for play intents.
+     * The intent action for play (as in resume) intents.
      */
     public static final String PLAY_ACTION
             = "com.tranquilaudio.tranquilaudio_app.ACTION_PLAY";
@@ -33,6 +38,23 @@ public final class AudioPlayerService extends Service {
      */
     public static final String PAUSE_ACTION
             = "com.tranquilaudio.tranquilaudio_app.ACTION_PAUSE";
+
+    /**
+     * The intent action for loading and playing a new track.
+     */
+    public static final String LOAD_NEW_TRACK_ACTION
+            = "com.tranquilaudio.tranquilaudio_app.ACTION_LOAD_TRACK";
+
+    /**
+     * The intent extra key corresponding to the ID of the track to play.
+     */
+    public static final String SCENE_ID_KEY
+            = "com.tranquilaudio.tranquilaudio_app.SCENE_ID_KEY";
+
+    /**
+     * Use the scene with this ID by default.
+     */
+    public static final long DEFAULT_SCENE = 1;
 
     // corresponding request codes for the above action strings
     private static final int REQUEST_PLAY = 11;
@@ -47,23 +69,32 @@ public final class AudioPlayerService extends Service {
     /**
      * The intent extras key for BROADCAST_PLAYER_STATUS_ACTION.
      */
-    public static final String PLAYER_STATUS_EXTRA_KEY = "STATUS";
+    public static final String PLAYER_STATUS_EXTRA_KEY
+            = "com.tranquilaudio.tranquilaudio_app.STATUS_KEY";
 
     private static final int ONGOING_NOTIFICATION_ID = 12345;
 
     /**
      * Possible statuses for Media playback.
      */
-    enum PlayerStatus { PAUSED, PLAYING }
+    enum PlayerStatus {
+        /**
+         * Paused.
+         */
+        PAUSED,
+        /**
+         * Playing.
+         */
+        PLAYING
+    }
 
     private static final String TAG = "AudioPlayerService";
 
     private MediaPlayer mediaPlayer;
     private MediaSessionManager mediaSessionManager;
     private MediaSessionCompat mediaSession;
-
-    @RawRes private static final int DEFAULT_AUDIO =
-            com.tranquilaudio.tranquilaudio_app.R.raw.sound_clip_1;
+    private AudioScene currentScene;
+    private AudioSceneLoader loader;
 
     private final IBinder mBinder = new MyBinder();
 
@@ -71,20 +102,29 @@ public final class AudioPlayerService extends Service {
     public int onStartCommand(final Intent intent, final int flags,
                               final int startId) {
         final String action = intent.getAction();
-        if (action.equals(PLAY_ACTION)) {
-            playMedia();
-        } else {
-            pauseMedia();
+        switch (action) {
+            case PLAY_ACTION:
+                playMedia();
+                break;
+            case PAUSE_ACTION:
+                pauseMedia();
+                break;
+            case LOAD_NEW_TRACK_ACTION:
+                final Long audioTrackId
+                        = intent.getLongExtra(SCENE_ID_KEY, DEFAULT_SCENE);
+                loadMedia(audioTrackId);
+                break;
+            default:
+                throw new RuntimeException("unrecognised action");
         }
         return START_REDELIVER_INTENT;
     }
 
     @Override
     public IBinder onBind(final Intent intent) {
-//        @RawRes final int audioTrack = DEFAULT_AUDIO;
-        final String test = "sound_clip_1";
-        final Uri audioTrack = Uri.parse(
-                "android.resource://" + getPackageName() + "/raw/" + test);
+        loader = new AudioSceneLoaderImpl(new SystemWrapperForModelImpl(this));
+        currentScene = loader.getScene(DEFAULT_SCENE);
+        final Uri audioTrack = currentScene.getAudioURI(this);
         this.mediaPlayer
                 = MediaPlayer.create(getApplicationContext(), audioTrack);
         initMediaSession();
@@ -163,8 +203,7 @@ public final class AudioPlayerService extends Service {
 
     @Override
     public void onDestroy() {
-        // can I call this without breaking playback?
-//        mediaPlayer.release();
+        Log.d(TAG, "onDestroy called.");
     }
 
     private void initMediaSession() {
@@ -198,44 +237,60 @@ public final class AudioPlayerService extends Service {
         });
     }
 
-    private void updateMetadata() {
-        // TODO not sure how exactly to make use of music metadata here
-    }
-
     private void pauseMedia() {
         mediaPlayer.pause();
         publishResult(PlayerStatus.PAUSED);
-        updateMetadata();
-        final NotificationManager mNotificationManager
-                = (NotificationManager) getSystemService(
-                Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(ONGOING_NOTIFICATION_ID,
-                buildNotification(PlayerStatus.PAUSED));
     }
 
     // play or resume
     private void playMedia() {
         mediaPlayer.start();
         publishResult(PlayerStatus.PLAYING);
-        updateMetadata();
-        final NotificationManager mNotificationManager
-                = (NotificationManager) getSystemService(
-                Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(ONGOING_NOTIFICATION_ID,
-                buildNotification(PlayerStatus.PLAYING));
+    }
+
+    /**
+     * Load and play the given Audio Scene.
+     *
+     * @param audioSceneId the ID of the Audio Scene to play.
+     */
+    private void loadMedia(final long audioSceneId) {
+        currentScene = loader.getScene(audioSceneId);
+        final Uri audioTrack = currentScene.getAudioURI(this);
+        try {
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(getApplicationContext(), audioTrack);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            publishResult(PlayerStatus.PLAYING);
+        } catch (final IOException e) {
+            throw new RuntimeException("could not load media");
+        }
     }
 
     /**
      * Broadcasts the new status of the media player.
      */
     private void publishResult(final PlayerStatus status) {
+        broadcastPlayerStatus(status);
+        updateNotification(status);
+    }
+
+    private void broadcastPlayerStatus(final PlayerStatus status) {
         final Intent intent = new Intent(BROADCAST_PLAYER_STATUS_ACTION);
         intent.putExtra(PLAYER_STATUS_EXTRA_KEY, status);
         sendBroadcast(intent);
     }
 
+    private void updateNotification(final PlayerStatus status) {
+        final NotificationManager mNotificationManager = (NotificationManager)
+                getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(ONGOING_NOTIFICATION_ID,
+                buildNotification(status));
+    }
+
     /**
      * Get the current status of media playback.
+     *
      * @return the status.
      */
     public PlayerStatus getStatus() {
@@ -245,4 +300,14 @@ public final class AudioPlayerService extends Service {
             return PlayerStatus.PAUSED;
         }
     }
+
+    /**
+     * Gets the ID of the currently loaded media.
+     *
+     * @return the ID.
+     */
+    public long getPlayingTrack() {
+        return currentScene.getId();
+    }
+
 }
