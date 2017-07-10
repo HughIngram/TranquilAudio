@@ -8,25 +8,25 @@
     {
       "id":2,
       "title":"Redhill, England",
-      "details":"description description description",
+      "details":"description Redhill description",
       "audioResource":"sound_clip_1"
     },
     {
       "id":3,
       "title":"Aylestone Meadows, Leicester, England",
-      "details":"description description description",
+      "details":"description Meadows description",
       "audioResource":"sound_clip_2"
     },
     {
       "id":4,
       "title":"Foxton Locks, Leicestershire, England",
-      "details":"description description description",
+      "details":"description Foxton Locks description",
       "audioResource":"sound_clip_1"
     },
     {
       "id":5,
       "title":"Box Hill, England",
-      "details":"description description description",
+      "details":"Box Hill description description description",
       "audioResource":"sound_clip_2"
     }
 ]
