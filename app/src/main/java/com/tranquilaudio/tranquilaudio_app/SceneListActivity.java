@@ -17,6 +17,7 @@ import android.view.View;
 import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.model.MediaControlClient;
 import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModel;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
@@ -42,6 +43,7 @@ public final class SceneListActivity
     private boolean isTwoPane;
     private AudioPlayerService audioPlayerService;
     private MediaControlBar mediaControlBar;
+    private MediaControlClient mediaClient;
 
     private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
         @Override
@@ -59,17 +61,20 @@ public final class SceneListActivity
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
+        mediaClient = new MediaControlClient(this);
         final View mediaControlLayout = findViewById(R.id.media_controller);
         final MediaControlBar.Callbacks cb = new MediaControlBar.Callbacks() {
 
             @Override
             public void pause() {
-                publishMediaControlIntent(AudioPlayerService.PAUSE_ACTION);
+                mediaClient.publishMediaControlIntent(
+                        AudioPlayerService.PAUSE_ACTION);
             }
 
             @Override
             public void play() {
-                publishMediaControlIntent(AudioPlayerService.PLAY_ACTION);
+                mediaClient.publishMediaControlIntent(
+                        AudioPlayerService.PLAY_ACTION);
             }
 
             @Override
@@ -100,13 +105,6 @@ public final class SceneListActivity
                 AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
     }
 
-    private void publishMediaControlIntent(final String goalAction) {
-        final Intent intent = new Intent(
-                getApplicationContext(), AudioPlayerService.class);
-        intent.setAction(goalAction);
-        startService(intent);
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -127,6 +125,7 @@ public final class SceneListActivity
                                    final IBinder binder) {
         audioPlayerService
                 = ((AudioPlayerService.MyBinder) binder).getService();
+        mediaControlBar.updateStatus();
     }
 
     @Override

@@ -15,7 +15,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import com.tranquilaudio.tranquilaudio_app.model.MediaControlClient;
 import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
+import com.tranquilaudio.tranquilaudio_app.view.MediaControlBar;
 
 /**
  * An activity representing a single AudioScene detail screen. This
@@ -28,6 +30,8 @@ public final class SceneDetailActivity extends AppCompatActivity
 
     private AudioPlayerService audioPlayerService;
     private FloatingActionButton fab;
+    private MediaControlBar mediaControlBar;
+    private MediaControlClient mediaControlClient;
     private long sceneId; // the ID of the scene associated with this activity
 
     @Override
@@ -45,6 +49,29 @@ public final class SceneDetailActivity extends AppCompatActivity
                 fabClick();
             }
         });
+
+        mediaControlClient = new MediaControlClient(this);
+        final View mediaControlLayout = findViewById(R.id.media_controller);
+        final MediaControlBar.Callbacks cb = new MediaControlBar.Callbacks() {
+
+            @Override
+            public void pause() {
+                mediaControlClient.publishMediaControlIntent(
+                        AudioPlayerService.PAUSE_ACTION);
+            }
+
+            @Override
+            public void play() {
+                mediaControlClient.publishMediaControlIntent(
+                        AudioPlayerService.PLAY_ACTION);
+            }
+
+            @Override
+            public PlayerStatus getStatus() {
+                return audioPlayerService.getStatus();
+            }
+        };
+        mediaControlBar = new MediaControlBar(mediaControlLayout, this, cb);
 
         // Show the Up button in the action bar.
         final ActionBar actionBar = getSupportActionBar();
@@ -87,7 +114,8 @@ public final class SceneDetailActivity extends AppCompatActivity
                                    final IBinder binder) {
         audioPlayerService
                 = ((AudioPlayerService.MyBinder) binder).getService();
-        updatePausePlayButton();
+        updateFloatingActionButton();
+        mediaControlBar.updateStatus();
     }
 
     @Override
@@ -122,7 +150,8 @@ public final class SceneDetailActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         if (audioPlayerService != null) {
-            updatePausePlayButton();
+            updateFloatingActionButton();
+            mediaControlBar.updateStatus();
         }
     }
 
@@ -136,11 +165,12 @@ public final class SceneDetailActivity extends AppCompatActivity
     private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            updatePausePlayButton();
+            updateFloatingActionButton();
+            mediaControlBar.updateStatus();
         }
     };
 
-    private void updatePausePlayButton() {
+    private void updateFloatingActionButton() {
         final PlayerStatus status
                 = audioPlayerService.getStatus();
         final long currentlyPlayingTrack = audioPlayerService.getPlayingTrack();
@@ -148,16 +178,15 @@ public final class SceneDetailActivity extends AppCompatActivity
         if (currentlyPlayingTrack == sceneId) {
             // user is looking at the playing track - let them pause / resume it
             if (status == PlayerStatus.PLAYING) {
-                fab.setImageDrawable(getResources()
-                        .getDrawable(android.R.drawable.ic_media_pause));
+                fab.setImageDrawable(getDrawable(
+                        android.R.drawable.ic_media_pause));
             } else {
-                fab.setImageDrawable(getResources()
-                        .getDrawable(android.R.drawable.ic_media_play));
+                fab.setImageDrawable(getDrawable(
+                        android.R.drawable.ic_media_play));
             }
         } else {
             // user is looking at a different track. Play it.
-            fab.setImageDrawable(getResources()
-                    .getDrawable(android.R.drawable.ic_media_play));
+            fab.setImageDrawable(getDrawable(android.R.drawable.ic_media_play));
         }
     }
 

@@ -1,4 +1,5 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -49,5 +50,16 @@
         app:layout_anchor="@+id/scene_detail_container"
         app:layout_anchorGravity="top|end"
         app:srcCompat="@android:drawable/ic_media_play" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:gravity="bottom">
+
+        <include layout="@layout/media_control_bar"
+                 android:id="@+id/media_controller"/>
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

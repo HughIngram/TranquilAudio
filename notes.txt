@@ -34,7 +34,7 @@ Current commit:
         should change its behaviour depending on isTwoPane and the active list element
 
 ====================
->Implement bottom bar media control
+>add ripple to bottom bar button
 
 >ensure the AudioPlayerService is decoupled from the location of media
 
