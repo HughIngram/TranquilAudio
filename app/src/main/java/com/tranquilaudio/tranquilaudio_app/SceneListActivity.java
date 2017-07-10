@@ -9,7 +9,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,8 +17,10 @@ import android.view.View;
 import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModel;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
+import com.tranquilaudio.tranquilaudio_app.view.MediaControlBar;
 
 import java.util.List;
 
@@ -40,29 +41,14 @@ public final class SceneListActivity
      */
     private boolean isTwoPane;
     private AudioPlayerService audioPlayerService;
-    private FloatingActionButton fab;
+    private MediaControlBar mediaControlBar;
 
     private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            final AudioPlayerService.PlayerStatus playerStatus
-                    = (AudioPlayerService.PlayerStatus) intent.getExtras()
-                    .get(AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
-            updatePausePlayButton(playerStatus);
+            mediaControlBar.updateStatus();
         }
     };
-
-    // TODO eliminate the playerStatus field?  get playerstatus directly instead
-    private void updatePausePlayButton(
-            final AudioPlayerService.PlayerStatus playerStatus) {
-        if (playerStatus == AudioPlayerService.PlayerStatus.PLAYING) {
-            fab.setImageDrawable(getResources()
-                    .getDrawable(android.R.drawable.ic_media_pause));
-        } else {
-            fab.setImageDrawable(getResources()
-                    .getDrawable(android.R.drawable.ic_media_play));
-        }
-    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -73,13 +59,25 @@ public final class SceneListActivity
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        final View mediaControlLayout = findViewById(R.id.media_controller);
+        final MediaControlBar.Callbacks cb = new MediaControlBar.Callbacks() {
+
             @Override
-            public void onClick(final View view) {
-                fabClick();
+            public void pause() {
+                publishMediaControlIntent(AudioPlayerService.PAUSE_ACTION);
             }
-        });
+
+            @Override
+            public void play() {
+                publishMediaControlIntent(AudioPlayerService.PLAY_ACTION);
+            }
+
+            @Override
+            public PlayerStatus getStatus() {
+                return audioPlayerService.getStatus();
+            }
+        };
+        mediaControlBar = new MediaControlBar(mediaControlLayout, this, cb);
 
         final View recyclerView = findViewById(R.id.scene_list);
         assert recyclerView != null;
@@ -102,24 +100,19 @@ public final class SceneListActivity
                 AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
     }
 
+    private void publishMediaControlIntent(final String goalAction) {
+        final Intent intent = new Intent(
+                getApplicationContext(), AudioPlayerService.class);
+        intent.setAction(goalAction);
+        startService(intent);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         if (audioPlayerService != null) {
-            updatePausePlayButton(audioPlayerService.getStatus());
+            mediaControlBar.updateStatus();
         }
-    }
-
-    private void fabClick() {
-        final Intent intent = new Intent(
-                getApplicationContext(), AudioPlayerService.class);
-        if (audioPlayerService.getStatus()
-                == AudioPlayerService.PlayerStatus.PLAYING) {
-            intent.setAction(AudioPlayerService.PAUSE_ACTION);
-        } else {
-            intent.setAction(AudioPlayerService.PLAY_ACTION);
-        }
-        startService(intent);
     }
 
     private void setupRecyclerView(@NonNull final RecyclerView recyclerView) {

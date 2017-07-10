@@ -18,6 +18,7 @@ import android.util.Log;
 import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
 
 import java.io.IOException;
@@ -73,20 +74,6 @@ public final class AudioPlayerService extends Service {
             = "com.tranquilaudio.tranquilaudio_app.STATUS_KEY";
 
     private static final int ONGOING_NOTIFICATION_ID = 12345;
-
-    /**
-     * Possible statuses for Media playback.
-     */
-    enum PlayerStatus {
-        /**
-         * Paused.
-         */
-        PAUSED,
-        /**
-         * Playing.
-         */
-        PLAYING
-    }
 
     private static final String TAG = "AudioPlayerService";
 

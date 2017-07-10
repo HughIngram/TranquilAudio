@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
+
 /**
  * An activity representing a single AudioScene detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
@@ -93,7 +95,7 @@ public final class SceneDetailActivity extends AppCompatActivity
     }
 
     private void fabClick() {
-        final AudioPlayerService.PlayerStatus status
+        final PlayerStatus status
                 = audioPlayerService.getStatus();
         final long currentlyPlayingTrack = audioPlayerService.getPlayingTrack();
         final Intent intent = new Intent(
@@ -101,7 +103,7 @@ public final class SceneDetailActivity extends AppCompatActivity
 
         if (currentlyPlayingTrack == sceneId) {
             // user is looking at the playing track - let them pause / resume it
-            if (status == AudioPlayerService.PlayerStatus.PLAYING) {
+            if (status == PlayerStatus.PLAYING) {
                 intent.setAction(AudioPlayerService.PAUSE_ACTION);
             } else {
                 intent.setAction(AudioPlayerService.PLAY_ACTION);
@@ -139,13 +141,13 @@ public final class SceneDetailActivity extends AppCompatActivity
     };
 
     private void updatePausePlayButton() {
-        final AudioPlayerService.PlayerStatus status
+        final PlayerStatus status
                 = audioPlayerService.getStatus();
         final long currentlyPlayingTrack = audioPlayerService.getPlayingTrack();
 
         if (currentlyPlayingTrack == sceneId) {
             // user is looking at the playing track - let them pause / resume it
-            if (status == AudioPlayerService.PlayerStatus.PLAYING) {
+            if (status == PlayerStatus.PLAYING) {
                 fab.setImageDrawable(getResources()
                         .getDrawable(android.R.drawable.ic_media_pause));
             } else {
