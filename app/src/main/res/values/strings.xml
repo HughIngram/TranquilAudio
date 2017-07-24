@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Tranquil Audio</string>
+    <string name="service_description">Tranquil audio media playback</string>
     <string name="title_scene_detail">Scene Detail</string>
 
 </resources>

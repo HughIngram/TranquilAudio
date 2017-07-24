@@ -4,22 +4,29 @@ import android.content.Context;
 import android.support.annotation.IdRes;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.tranquilaudio.tranquilaudio_app.R;
+import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
 import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
 
 /**
  * The bottom bar which controls Media playback.
- *
  */
 public final class MediaControlBar {
 
     private final ImageButton pausePlayButton;
+    private final TextView mediaTitle;
     private final Context context;
     private final Callbacks callbacks;
 
+    private PlayerStatus playerStatus;
+
     @IdRes
     private static final int MEDIA_BUTTON_ID = R.id.media_control_button;
+
+    @IdRes
+    private static final int MEDIA_TITLE_ID = R.id.media_title;
 
     /**
      * Default constructor.
@@ -31,16 +38,22 @@ public final class MediaControlBar {
                            final Callbacks callbacks) {
         this.pausePlayButton
                 = (ImageButton) barView.findViewById(MEDIA_BUTTON_ID);
+        this.mediaTitle = (TextView) barView.findViewById(MEDIA_TITLE_ID);
         this.context = context;
         this.callbacks = callbacks;
         setUpOnClick();
     }
 
     /**
-     * Update the status of the media control bar.
+     * Update the state of the media control bar.
+     * @param status yayay
+     * @param scene ayaya
      */
-    public void updateStatus() {
-        setStatus(callbacks.getStatus());
+    public void updateView(
+            final PlayerStatus status, final AudioScene scene) {
+        setStatus(status);
+        setAudioScene(scene);
+        playerStatus = status;
     }
 
     /**
@@ -58,15 +71,19 @@ public final class MediaControlBar {
         }
     }
 
+    private void setAudioScene(final AudioScene scene) {
+        mediaTitle.setText(scene.getTitle());
+    }
+
     private void setUpOnClick() {
         pausePlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (callbacks.getStatus() == PlayerStatus.PLAYING) {
+                if (playerStatus == PlayerStatus.PLAYING) {
                     callbacks.pause();
                     setStatus(PlayerStatus.PAUSED);
                 } else {
-                    callbacks.play();
+                    callbacks.resume();
                     setStatus(PlayerStatus.PLAYING);
                 }
             }
@@ -85,14 +102,8 @@ public final class MediaControlBar {
         /**
          * Called when the Play button is pressed.
          */
-        void play();
+        void resume();
 
-        /**
-         * Get the status of Audio Playback.
-         * @return the status.
-         */
-        PlayerStatus getStatus();
     }
 
-    // setAudioScene(final AudioScene scene)
 }

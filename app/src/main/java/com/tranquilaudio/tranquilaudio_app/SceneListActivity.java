@@ -1,23 +1,20 @@
 package com.tranquilaudio.tranquilaudio_app;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.tranquilaudio.tranquilaudio_app.model.AudioPlayerService;
 import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
-import com.tranquilaudio.tranquilaudio_app.model.MediaControlClient;
 import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModel;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
@@ -33,24 +30,15 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public final class SceneListActivity
-        extends AppCompatActivity implements ServiceConnection {
+public final class SceneListActivity extends AppCompatActivity {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean isTwoPane;
-    private AudioPlayerService audioPlayerService;
     private MediaControlBar mediaControlBar;
-    private MediaControlClient mediaClient;
-
-    private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            mediaControlBar.updateStatus();
-        }
-    };
+    private AudioSceneLoader loader;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -61,26 +49,21 @@ public final class SceneListActivity
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        mediaClient = new MediaControlClient(this);
+        loader = new AudioSceneLoaderImpl(new SystemWrapperForModelImpl(this));
+
         final View mediaControlLayout = findViewById(R.id.media_controller);
         final MediaControlBar.Callbacks cb = new MediaControlBar.Callbacks() {
 
             @Override
             public void pause() {
-                mediaClient.publishMediaControlIntent(
-                        AudioPlayerService.PAUSE_ACTION);
+                getTranquilApp().getMediaControlClient().pause();
             }
 
             @Override
-            public void play() {
-                mediaClient.publishMediaControlIntent(
-                        AudioPlayerService.PLAY_ACTION);
+            public void resume() {
+                getTranquilApp().getMediaControlClient().resume();
             }
 
-            @Override
-            public PlayerStatus getStatus() {
-                return audioPlayerService.getStatus();
-            }
         };
         mediaControlBar = new MediaControlBar(mediaControlLayout, this, cb);
 
@@ -96,22 +79,42 @@ public final class SceneListActivity
              isTwoPane = true;
         }
 
-        final Intent mediaPlayerIntent
-                = new Intent(this, AudioPlayerService.class);
-        mediaPlayerIntent.setAction(AudioPlayerService.PAUSE_ACTION);
-        bindService(mediaPlayerIntent, this, Context.BIND_AUTO_CREATE);
+    }
 
+    private TranquilAudioApplication getTranquilApp() {
+        return (TranquilAudioApplication) getApplication();
+    }
+
+    private void registerBroadcastReceiver() {
         registerReceiver(playerStatusReceiver, new IntentFilter(
                 AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
     }
 
+    private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final PlayerStatus playerStatus = (PlayerStatus) intent
+                    .getSerializableExtra(
+                    AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
+            final long trackId = intent.getLongExtra(AudioPlayerService.SCENE_ID_KEY, 0);
+            final AudioScene playingTrack = loader.getScene(trackId);
+            mediaControlBar.updateView(playerStatus, playingTrack);
+        }
+    };
+
     @Override
     protected void onResume() {
         super.onResume();
-        if (audioPlayerService != null) {
-            mediaControlBar.updateStatus();
-        }
+        registerBroadcastReceiver();
+        getTranquilApp().broadcastAudioPlayerServiceStatus();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(playerStatusReceiver);
+    }
+
 
     private void setupRecyclerView(@NonNull final RecyclerView recyclerView) {
         final SystemWrapperForModel sys = new SystemWrapperForModelImpl(this);
@@ -120,19 +123,8 @@ public final class SceneListActivity
         recyclerView.setAdapter(new SceneRecyclerViewAdapter(this, scenes));
     }
 
-    @Override
-    public void onServiceConnected(final ComponentName name,
-                                   final IBinder binder) {
-        audioPlayerService
-                = ((AudioPlayerService.MyBinder) binder).getService();
-        mediaControlBar.updateStatus();
-    }
-
-    @Override
-    public void onServiceDisconnected(final ComponentName name) {
-    }
-
     boolean isTwoPane() {
         return isTwoPane;
     }
+
 }

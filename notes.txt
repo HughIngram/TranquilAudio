@@ -3,7 +3,7 @@ Current commit:
     -explicitly sort the list of Scenes
 
     >Done:
-    -implement other play button
+    -implement other resume button
     -add audio resources
     -implement loading of audio from different locations
 
@@ -26,15 +26,20 @@ Current commit:
 
     -put JSON in raw folder, as if it were a downloaded file.
     -how am I going to store the audio location (in raw folder) as JSON??
-    -what will the behaviour of the play button be? What if a track is already playing,
+    -what will the behaviour of the resume button be? What if a track is already playing,
     then the user views the page for another track?
-        >the playing track fragment should show a pause/play button
-        >other tracks should show a play button to switch over to that one
+        >the playing track fragment should show a pause/resume button
+        >other tracks should show a resume button to switch over to that one
         >SceneDetailFragment should behave similarly - or rather SceneListActivity
         should change its behaviour depending on isTwoPane and the active list element
 
 ====================
 >add ripple to bottom bar button
+>the media bar is included in animations between activities, but as far as the
+    user is concerned, it is always the same media bar. Is there a way to prevent
+    it from animating?
+        -use a fragment?
+https://github.com/codepath/android_guides/wiki/Shared-Element-Activity-Transition
 
 >ensure the AudioPlayerService is decoupled from the location of media
 
@@ -50,8 +55,8 @@ Current commit:
     -should there be a stop button anywhere?
 
 >Feature: improve notification controls
-    -appears only after hitting play
-    -has a pause / play button
+    -appears only after hitting resume
+    -has a pause / resume button
     -has a close button
     -lock screen control
     -Add more metadata to notification - info about current track, album art?
@@ -68,6 +73,12 @@ Current commit:
 >sleep timer
 
 >loop the tracks. Start each one at a random point in the recording.
+
+>is the AudioPlayerService configured to run in a different process from the activities?
+    -it should be a private remote service.
+
+>find a better way to keep track of State (PlayerStatus, PlayingTrack...)
+    -SharedPrefs?
 ====================
 ====================
 
@@ -78,17 +89,17 @@ get the MediaPlayer service to keep playing
 -go to different activities
 -lock the screen
 
-Change Mail icon to play
+Change Mail icon to resume
 
 >BUG: rotating causes the list to be duplicated
->BUG: first click on play does not start audio
+>BUG: first click on resume does not start audio
 >make a checkstyle rule set
 >change package name
->alternate play button
+>alternate resume button
 
     https://stackoverflow.com/questions/23443946/music-player-control-in-notification
     https://stackoverflow.com/questions/22066531/hide-notification-of-foreground-service-while-context-is-visible
 
 >BUG: leaving the app with audio playing, then resuming, will show the wrong
-        status in play button.
+        status in resume button.
 

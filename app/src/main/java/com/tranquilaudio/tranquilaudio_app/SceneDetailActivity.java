@@ -1,13 +1,10 @@
 package com.tranquilaudio.tranquilaudio_app;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -15,8 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import com.tranquilaudio.tranquilaudio_app.model.AudioPlayerService;
+import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
+import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
 import com.tranquilaudio.tranquilaudio_app.model.MediaControlClient;
 import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
+import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
 import com.tranquilaudio.tranquilaudio_app.view.MediaControlBar;
 
 /**
@@ -25,14 +27,15 @@ import com.tranquilaudio.tranquilaudio_app.view.MediaControlBar;
  * item details are presented side-by-side with a list of items
  * in a {@link SceneListActivity}.
  */
-public final class SceneDetailActivity extends AppCompatActivity
-        implements ServiceConnection {
+public final class SceneDetailActivity extends AppCompatActivity {
 
-    private AudioPlayerService audioPlayerService;
     private FloatingActionButton fab;
     private MediaControlBar mediaControlBar;
-    private MediaControlClient mediaControlClient;
-    private long sceneId; // the ID of the scene associated with this activity
+    private AudioScene visibleScene;    // the scene shown in this activity
+    private AudioSceneLoader loader;
+
+    private PlayerStatus status;    // update these fields onReceive
+    private AudioScene playingScene;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -40,8 +43,6 @@ public final class SceneDetailActivity extends AppCompatActivity
         setContentView(R.layout.activity_scene_detail);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
-        sceneId = getIntent().getLongExtra(SceneDetailFragment.ARG_ITEM_ID,
-                AudioPlayerService.DEFAULT_SCENE);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,26 +51,24 @@ public final class SceneDetailActivity extends AppCompatActivity
             }
         });
 
-        mediaControlClient = new MediaControlClient(this);
+        loader = new AudioSceneLoaderImpl(new SystemWrapperForModelImpl(this));
+        final long sceneId = getIntent()
+                .getLongExtra(SceneDetailFragment.ARG_ITEM_ID,
+                        MediaControlClient.DEFAULT_SCENE);
+        visibleScene = loader.getScene(sceneId);
         final View mediaControlLayout = findViewById(R.id.media_controller);
         final MediaControlBar.Callbacks cb = new MediaControlBar.Callbacks() {
 
             @Override
             public void pause() {
-                mediaControlClient.publishMediaControlIntent(
-                        AudioPlayerService.PAUSE_ACTION);
+                getTranquilApp().getMediaControlClient().pause();
             }
 
             @Override
-            public void play() {
-                mediaControlClient.publishMediaControlIntent(
-                        AudioPlayerService.PLAY_ACTION);
+            public void resume() {
+                getTranquilApp().getMediaControlClient().resume();
             }
 
-            @Override
-            public PlayerStatus getStatus() {
-                return audioPlayerService.getStatus();
-            }
         };
         mediaControlBar = new MediaControlBar(mediaControlLayout, this, cb);
 
@@ -101,81 +100,59 @@ public final class SceneDetailActivity extends AppCompatActivity
             // TODO why does rotation cause the title to change?
         }
 
-        final Intent mediaPlayerIntent
-                = new Intent(this, AudioPlayerService.class);
-        bindService(mediaPlayerIntent, this, Context.BIND_AUTO_CREATE);
+    }
 
+    private TranquilAudioApplication getTranquilApp() {
+        return (TranquilAudioApplication) getApplication();
+    }
+
+
+    private void fabClick() {
+        if (playingScene.getId() == visibleScene.getId()) {
+            // user is looking at the playing track - let them pause / resume it
+            if (status == PlayerStatus.PLAYING) {
+                getTranquilApp().getMediaControlClient().pause();
+            } else {
+                getTranquilApp().getMediaControlClient().resume();
+            }
+        } else {
+            // user is looking at a different track. Play it.
+            getTranquilApp().getMediaControlClient().loadScene(visibleScene.getId());
+        }
+    }
+
+    private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final long trackId = intent.getLongExtra(AudioPlayerService.SCENE_ID_KEY, 0);
+            playingScene = loader.getScene(trackId);
+            status = (PlayerStatus) intent.getSerializableExtra(
+                            AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
+            mediaControlBar.updateView(status, playingScene);
+            updateFloatingActionButton();
+        }
+    };
+
+    private void registerBroadcastReceiver() {
         registerReceiver(playerStatusReceiver, new IntentFilter(
                 AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
     }
 
     @Override
-    public void onServiceConnected(final ComponentName name,
-                                   final IBinder binder) {
-        audioPlayerService
-                = ((AudioPlayerService.MyBinder) binder).getService();
-        updateFloatingActionButton();
-        mediaControlBar.updateStatus();
-    }
-
-    @Override
-    public void onServiceDisconnected(final ComponentName name) {
-    }
-
-    private void fabClick() {
-        final PlayerStatus status
-                = audioPlayerService.getStatus();
-        final long currentlyPlayingTrack = audioPlayerService.getPlayingTrack();
-        final Intent intent = new Intent(
-                getApplicationContext(), AudioPlayerService.class);
-
-        if (currentlyPlayingTrack == sceneId) {
-            // user is looking at the playing track - let them pause / resume it
-            if (status == PlayerStatus.PLAYING) {
-                intent.setAction(AudioPlayerService.PAUSE_ACTION);
-            } else {
-                intent.setAction(AudioPlayerService.PLAY_ACTION);
-            }
-        } else {
-            // user is looking at a different track. Play it.
-            intent.setAction(AudioPlayerService.LOAD_NEW_TRACK_ACTION);
-            intent.putExtra(AudioPlayerService.SCENE_ID_KEY, sceneId);
-        }
-        startService(intent);
-        // TODO there's some shared logic between this class and the
-        // ListActivity perhaps they should share a presenter??
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
-        if (audioPlayerService != null) {
-            updateFloatingActionButton();
-            mediaControlBar.updateStatus();
-        }
+        registerBroadcastReceiver();
+        getTranquilApp().broadcastAudioPlayerServiceStatus();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        unbindService(this);
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(playerStatusReceiver);
     }
 
-    // when rotating, this gets called before onResume()
-    private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            updateFloatingActionButton();
-            mediaControlBar.updateStatus();
-        }
-    };
-
     private void updateFloatingActionButton() {
-        final PlayerStatus status
-                = audioPlayerService.getStatus();
-        final long currentlyPlayingTrack = audioPlayerService.getPlayingTrack();
-
-        if (currentlyPlayingTrack == sceneId) {
+        if (visibleScene.getId() == playingScene.getId()) {
             // user is looking at the playing track - let them pause / resume it
             if (status == PlayerStatus.PLAYING) {
                 fab.setImageDrawable(getDrawable(
