@@ -1,9 +1,27 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scene_detail"
-    style="?android:attr/textAppearanceLarge"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:textIsSelectable="true"
-    tools:context="com.tranquilaudio.tranquilaudio_app.SceneDetailFragment" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                tools:context="com.tranquilaudio.tranquilaudio_app.SceneDetailFragment"
+                android:layout_margin="16dp"
+    >
+    <TextView
+        android:id="@+id/scene_title"
+        style="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/scene_detail"
+        android:layout_below="@id/scene_title"
+        style="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="16dp"
+        android:textIsSelectable="true"
+        />
+
+</RelativeLayout>

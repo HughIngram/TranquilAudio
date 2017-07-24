@@ -64,9 +64,11 @@ public final class SceneDetailFragment extends Fragment {
                              final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.scene_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.scene_detail)).setText(mItem.getDetails());
+            ((TextView) rootView.findViewById(R.id.scene_detail))
+                    .setText(mItem.getDetails());
+            ((TextView) rootView.findViewById(R.id.scene_title))
+                    .setText(mItem.getTitle());
         }
 
         return rootView;
