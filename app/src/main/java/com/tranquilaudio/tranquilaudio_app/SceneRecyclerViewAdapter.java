@@ -45,7 +45,6 @@ final class SceneRecyclerViewAdapter
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = scenes.get(position);
-        holder.mIdView.setText(Long.toString(scenes.get(position).getId()));
         holder.mContentView.setText(scenes.get(position).getTitle());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -97,14 +96,12 @@ final class SceneRecyclerViewAdapter
     final class ViewHolder extends RecyclerView.ViewHolder {
 
         private final View mView;
-        private final TextView mIdView;
         private final TextView mContentView;
         private AudioScene mItem;
 
         ViewHolder(final View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
             mContentView = (TextView) view.findViewById(R.id.title);
         }
 

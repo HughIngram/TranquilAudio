@@ -62,15 +62,29 @@ public final class SceneDetailFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater,
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.scene_detail, container, false);
+        final View rootView = inflater.inflate(
+                R.layout.scene_detail, container, false);
 
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.scene_detail))
+            ((TextView) rootView.findViewById(R.id.scene_detail_body))
                     .setText(mItem.getDetails());
             ((TextView) rootView.findViewById(R.id.scene_title))
                     .setText(mItem.getTitle());
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(final Bundle bundle) {
+        super.onActivityCreated(bundle);
+        final TextView titleView =
+                (TextView) getActivity().findViewById(R.id.scene_title);
+        final CollapsingToolbarLayout appBarLayout
+                = (CollapsingToolbarLayout) getActivity().findViewById(R.id
+                .toolbar_layout);
+        if (appBarLayout != null) {
+            titleView.setVisibility(View.GONE);
+        }
     }
 }

@@ -34,7 +34,14 @@ Current commit:
         should change its behaviour depending on isTwoPane and the active list element
 
 ====================
+>Implement a dark colour scheme
+    -extend from Theme.AppCompat
+    -alternate colours subtly
+
+>Tweak look of listview as per MD
+
 >add ripple to bottom bar button
+
 >the media bar is included in animations between activities, but as far as the
     user is concerned, it is always the same media bar. Is there a way to prevent
     it from animating?

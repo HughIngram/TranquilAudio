@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_height="match_parent"
@@ -5,23 +6,23 @@
                 tools:context="com.tranquilaudio.tranquilaudio_app.SceneDetailFragment"
                 android:layout_margin="16dp"
     >
+    <!--this title will only be included when in twopane mode-->
     <TextView
         android:id="@+id/scene_title"
-        style="?android:attr/textAppearanceLarge"
+        style="@style/AppTheme.Display1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="34sp"
-        android:textStyle="bold"
+        android:paddingBottom="8dp"
+        tools:text="Scene Title Goes Here."
         />
 
     <TextView
-        android:id="@+id/scene_detail"
-        android:layout_below="@id/scene_title"
-        style="?android:attr/textAppearanceLarge"
+        android:id="@+id/scene_detail_body"
+        style="@style/AppTheme.TextContentStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="16dp"
-        android:textIsSelectable="true"
+        android:layout_below="@id/scene_title"
+        tools:text="Scene description goes here ..."
         />
 
 </RelativeLayout>
