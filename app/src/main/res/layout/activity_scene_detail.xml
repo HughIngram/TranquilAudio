@@ -47,6 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
         android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:rippleColor="@color/colorAccentDark"
         app:layout_anchor="@+id/scene_detail_container"
         app:layout_anchorGravity="top|end"
         app:srcCompat="@android:drawable/ic_media_play" />
