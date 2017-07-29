@@ -48,13 +48,6 @@ public final class SceneDetailFragment extends Fragment {
                     new SystemWrapperForModelImpl(this.getContext()));
             mItem = loader.getScene(getArguments().getLong(ARG_ITEM_ID));
 
-            final Activity activity = this.getActivity();
-            final CollapsingToolbarLayout appBarLayout
-                    = (CollapsingToolbarLayout) activity
-                    .findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.getTitle());
-            }
         }
     }
 
@@ -85,6 +78,7 @@ public final class SceneDetailFragment extends Fragment {
                 .toolbar_layout);
         if (appBarLayout != null) {
             titleView.setVisibility(View.GONE);
+            appBarLayout.setTitle(mItem.getTitle());
         }
     }
 }
