@@ -22,6 +22,6 @@
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
         android:textSize="@dimen/media_control_bar_text_size"
-        android:textColor="@color/colorAccentLight"
+        android:textColor="@color/colorTextPrimary"
         tools:text="Currently Playing Track" />
 </RelativeLayout>
