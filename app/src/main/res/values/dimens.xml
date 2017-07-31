@@ -7,7 +7,8 @@
 
     <dimen name="media_control_bar_height">48dp</dimen>
     <dimen name="media_control_button_margin">16dp</dimen>
-    <dimen name="media_control_button_size">42dp</dimen>
+    <dimen name="media_control_button_size">54dp</dimen>
+    <dimen name="media_control_bar_elevation">8dp</dimen>
 
     <dimen name="media_control_bar_text_size">20sp</dimen>
 </resources>
