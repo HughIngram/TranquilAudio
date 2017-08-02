@@ -1,7 +1,6 @@
 package com.tranquilaudio.tranquilaudio_app;
 
 import android.app.Application;
-import android.content.Intent;
 
 import com.tranquilaudio.tranquilaudio_app.model.MediaControlClient;
 
@@ -29,6 +28,7 @@ public final class TranquilAudioApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
+        mediaControlClient.close();
     }
 
     /**
@@ -36,8 +36,14 @@ public final class TranquilAudioApplication extends Application {
      * status.
      */
     public void broadcastAudioPlayerServiceStatus() {
-        final Intent intent = new Intent("TEST");
-        sendBroadcast(intent);
+        mediaControlClient.requestStatus();
+    }
+
+    /**
+     *  Close the AudioPlayerService.
+     */
+    public void closeService() {
+        mediaControlClient.close();
     }
 
 }

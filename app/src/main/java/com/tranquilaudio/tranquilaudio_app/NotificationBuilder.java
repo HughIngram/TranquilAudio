@@ -20,6 +20,7 @@ public final class NotificationBuilder {
     // corresponding request codes for the above action strings
     private static final int REQUEST_PLAY = 11;
     private static final int REQUEST_PAUSE = 22;
+    private static final int REQUEST_END = 33;
 
     /**
      * Get a notification.
@@ -42,54 +43,64 @@ public final class NotificationBuilder {
 
         // the intent for the pause / resume button in the notification
         final PendingIntent mediaControlIntent;
-        final NotificationCompat.Action action;
+        final NotificationCompat.Action pausePlayAction;
         if (playerStatus == PlayerStatus.PLAYING) {
             mediaControlIntent = playbackAction(REQUEST_PAUSE, context);
-            action = new NotificationCompat.Action.Builder(
+            pausePlayAction = new NotificationCompat.Action.Builder(
                     R.drawable.ic_pause_black_24dp,
                     "pause", mediaControlIntent)
                     .build();
 
         } else {
             mediaControlIntent = playbackAction(REQUEST_PLAY, context);
-            action = new NotificationCompat.Action.Builder(
+            pausePlayAction = new NotificationCompat.Action.Builder(
                     R.drawable.ic_play_arrow_black_24dp,
                     "resume", mediaControlIntent)
                     .build();
         }
+        final PendingIntent closeIntent = playbackAction(REQUEST_END, context);
+        final NotificationCompat.Action closeAction
+                = new NotificationCompat.Action.Builder(
+                        R.drawable.ic_close_black_24dp,
+                "close", closeIntent).build();
 
         final NotificationCompat.MediaStyle notificationStyle
                 = new NotificationCompat.MediaStyle()
                 .setMediaSession(session.getSessionToken())
-                .setShowActionsInCompactView(0);
-
+                .setShowActionsInCompactView(0, 1);
         return new NotificationCompat.Builder(context)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(scene.getTitle())
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(scene.getTitle())
+                .setContentText("Tap to open the app.")
+                .setSmallIcon(R.drawable.play_circle_white_24dp)
                 .setContentIntent(pendingIntent)
                 .setTicker("Test ticker test")
                 .setStyle(notificationStyle)
-                .addAction(action)
+                .addAction(pausePlayAction)
+                .addAction(closeAction)
                 .build();
     }
 
     private PendingIntent playbackAction(final int actionNumber,
                                          final Context context) {
-        final Intent playbackAction
-                = new Intent(context, AudioPlayerService.class);
+        final Intent playbackIntent = new Intent();
         switch (actionNumber) {
             case REQUEST_PLAY:
-                playbackAction.setAction(AudioPlayerService.RESUME_ACTION);
-                return PendingIntent.getService(
-                        context, actionNumber, playbackAction, 0);
-            case REQUEST_PAUSE:
-                playbackAction.setAction(AudioPlayerService.PAUSE_ACTION);
-                return PendingIntent.getService(
-                        context, actionNumber, playbackAction, 0);
-            default:
+                playbackIntent.setClass(context, AudioPlayerService.class);
+                playbackIntent.setAction(AudioPlayerService.RESUME_ACTION);
                 break;
+            case REQUEST_PAUSE:
+                playbackIntent.setClass(context, AudioPlayerService.class);
+                playbackIntent.setAction(AudioPlayerService.PAUSE_ACTION);
+                break;
+            case REQUEST_END:
+                playbackIntent.setClass(context, AudioPlayerService.class);
+                playbackIntent.setAction(AudioPlayerService.CLOSE_ACTION);
+                return PendingIntent.getService(
+                        context, actionNumber, playbackIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            default:
+                return null;
         }
-        return null;
+        return PendingIntent.getService(
+                context, actionNumber, playbackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

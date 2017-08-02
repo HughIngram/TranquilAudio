@@ -2,10 +2,8 @@ package com.tranquilaudio.tranquilaudio_app.model;
 
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.session.MediaSessionManager;
 import android.net.Uri;
@@ -15,6 +13,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
 import com.tranquilaudio.tranquilaudio_app.NotificationBuilder;
+import com.tranquilaudio.tranquilaudio_app.TranquilAudioApplication;
 
 import java.io.IOException;
 
@@ -41,6 +40,18 @@ public final class AudioPlayerService extends Service {
     static final String LOAD_NEW_TRACK_ACTION
             = "com.tranquilaudio.tranquilaudio_app.ACTION_LOAD_TRACK";
 
+    /**
+     * The intent action for closing the Audio Playback service.
+     * Unlike the other actions, this one is watched by the Application.
+     */
+    public static final String CLOSE_ACTION
+            = "com.tranquilaudio.tranquilaudio_app.ACTION_CLOSE";
+
+    /**
+     * The intent action for requesting this Service to broadcast its status.
+     */
+    public static final String REQUEST_STATUS_ACTION
+            = "com.tranquilaudio.tranquilaudio_app.ACTION_REQUEST_STATUS";
     /**
      * The intent extra key corresponding to the ID of an audio track.
      */
@@ -75,35 +86,20 @@ public final class AudioPlayerService extends Service {
         super.onCreate();
         loader = new AudioSceneLoaderImpl(new SystemWrapperForModelImpl(this));
         currentScene = loader.getScene(MediaControlClient.DEFAULT_SCENE);
+    }
+
+    // This gets called BEFORE the service has been bound.
+    @Override
+    public IBinder onBind(final Intent intent) {
         final Uri audioTrack = currentScene.getAudioURI(this);
         this.mediaPlayer
                 = MediaPlayer.create(getApplicationContext(), audioTrack);
         initMediaSession();
         loadMedia(MediaControlClient.DEFAULT_SCENE);
         final NotificationBuilder builder = new NotificationBuilder();
-        // TODO wait until playback starts before displaying the notification.
         startForeground(ONGOING_NOTIFICATION_ID, builder
                 .buildNotification(PlayerStatus.PAUSED, currentScene, mediaSession, this));
-        registerBroadcastListener();
-    }
-
-    // receives requests for the current state of the service to be broadcast.
-    private BroadcastReceiver statusRequestReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            broadcastCurrentStatus();
-        }
-    };
-
-    private void registerBroadcastListener() {
-        registerReceiver(statusRequestReceiver, new IntentFilter("TEST"));  // TODO
-    }
-
-
-    // This gets called BEFORE the service has been bound.
-    @Override
-    public IBinder onBind(final Intent intent) {
-        return new MyBinder();
+        return new Binder();
     }
 
     @Override
@@ -123,20 +119,24 @@ public final class AudioPlayerService extends Service {
                 loadMedia(audioTrackId);
                 playMedia();
                 break;
+            case CLOSE_ACTION:
+                pauseMedia();
+                broadcastPlayerStatus();
+                requestClose();
+                stopForeground(true);
+                stopSelf();
+                break;
+            case REQUEST_STATUS_ACTION:
+                broadcastPlayerStatus();
+                break;
             default:
                 throw new RuntimeException("unrecognised action");
         }
         return START_REDELIVER_INTENT;
     }
 
-
-    /**
-     * Binder for teh AudioPlayerService.
-     */
-    class MyBinder extends Binder {
-        AudioPlayerService getService() {
-            return AudioPlayerService.this;
-        }
+    private void requestClose() {
+        ((TranquilAudioApplication) getApplication()).closeService();
     }
 
     @Override
@@ -184,6 +184,16 @@ public final class AudioPlayerService extends Service {
     private void playMedia() {
         mediaPlayer.start();
         publishResult();
+    }
+
+    @Override
+    public boolean onUnbind(final Intent intent) {
+        stopForeground(true);
+        mediaPlayer.stop();
+        mediaPlayer.release();
+        mediaSessionManager = null;
+        stopSelf();
+        return super.onUnbind(intent);
     }
 
     /**
@@ -237,10 +247,12 @@ public final class AudioPlayerService extends Service {
      * @return the status.
      */
     private PlayerStatus getStatus() {
-        if (mediaPlayer.isPlaying()) {
-            return PlayerStatus.PLAYING;
-        } else {
+        if (mediaPlayer == null) {
+            return PlayerStatus.STOPPED;
+        } else if (!mediaPlayer.isPlaying()) {
             return PlayerStatus.PAUSED;
+        } else {
+            return PlayerStatus.PLAYING;
         }
     }
 
@@ -251,13 +263,6 @@ public final class AudioPlayerService extends Service {
      */
     private long getPlayingTrackID() {
         return currentScene.getId();
-    }
-
-    /**
-     * Sends a broadcast describing the current state of the service.
-     */
-    public void broadcastCurrentStatus() {
-        broadcastPlayerStatus();
     }
 
 }

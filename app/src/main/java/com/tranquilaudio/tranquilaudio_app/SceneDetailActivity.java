@@ -97,7 +97,6 @@ public final class SceneDetailActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.scene_detail_container, fragment)
                     .commit();
-            // TODO why does rotation cause the title to change?
         }
 
     }
@@ -121,29 +120,29 @@ public final class SceneDetailActivity extends AppCompatActivity {
         }
     }
 
-    private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            final long trackId = intent.getLongExtra(AudioPlayerService.SCENE_ID_KEY, 0);
-            playingScene = loader.getScene(trackId);
-            status = (PlayerStatus) intent.getSerializableExtra(
-                            AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
-            mediaControlBar.updateView(status, playingScene);
-            updateFloatingActionButton();
-        }
-    };
-
-    private void registerBroadcastReceiver() {
-        registerReceiver(playerStatusReceiver, new IntentFilter(
-                AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
         registerBroadcastReceiver();
         getTranquilApp().broadcastAudioPlayerServiceStatus();
     }
+
+    private void registerBroadcastReceiver() {
+        registerReceiver(playerStatusReceiver, new IntentFilter(
+                AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
+    }
+
+    private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final long trackId = intent.getLongExtra(AudioPlayerService.SCENE_ID_KEY, 0);
+            playingScene = loader.getScene(trackId);
+            status = (PlayerStatus) intent.getSerializableExtra(
+                    AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
+            mediaControlBar.updateView(status, playingScene);
+            updateFloatingActionButton();
+        }
+    };
 
     @Override
     protected void onPause() {

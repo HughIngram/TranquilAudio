@@ -18,8 +18,7 @@ public final class MediaControlClient {
     public static final long DEFAULT_SCENE = 1;
 
     private final Context context;
-
-    private AudioPlayerService audioPlayerService;
+    private boolean isConnected = false;
 
     private static final String TAG = "MediaControllerClient";
 
@@ -33,36 +32,36 @@ public final class MediaControlClient {
         bindService();
     }
 
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(
+                final ComponentName name, final IBinder service) {
+            Log.d(TAG, "Service connected");
+            requestStatus();
+            isConnected = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(final ComponentName name) {
+            Log.d(TAG, "Service disconnected?");
+            isConnected = false;
+        }
+    };
 
     private void bindService() {
-        final ServiceConnection serviceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(
-                    final ComponentName name, final IBinder service) {
-                Log.d(TAG, "Service connected");
-                final AudioPlayerService.MyBinder binder
-                        = (AudioPlayerService.MyBinder) service;
-                audioPlayerService = binder.getService();
-                audioPlayerService.broadcastCurrentStatus();
-            }
-
-            @Override
-            public void onServiceDisconnected(final ComponentName name) {
-                Log.d(TAG, "Service disconnected?");
-                audioPlayerService = null;
-            }
-        };
         final Intent mediaPlayerIntent
                 = new Intent(context, AudioPlayerService.class);
         context.bindService(
                 mediaPlayerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-
     }
 
     /**
      * Resume audio playback.
      */
     public void resume() {
+        if (!isConnected) {
+            bindService();
+        }
         publishMediaControlIntent(AudioPlayerService.RESUME_ACTION, 0);
     }
 
@@ -74,11 +73,29 @@ public final class MediaControlClient {
     }
 
     /**
+     * Request the AudioPlayerService to broadcast its status.
+     */
+    public void requestStatus() {
+        publishMediaControlIntent(AudioPlayerService.REQUEST_STATUS_ACTION, 0);
+    }
+
+    /**
+     * Close the AudioPlayerService.
+     */
+    public void close() {
+        context.unbindService(serviceConnection);
+        isConnected = false;
+    }
+
+    /**
      * Load and play the scene with the given ID.
      *
      * @param sceneId the ID of the scene to load.
      */
     public void loadScene(final long sceneId) {
+        if (!isConnected) {
+            bindService();
+        }
         publishMediaControlIntent(
                 AudioPlayerService.LOAD_NEW_TRACK_ACTION, sceneId);
     }

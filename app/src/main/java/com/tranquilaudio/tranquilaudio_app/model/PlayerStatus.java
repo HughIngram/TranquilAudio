@@ -11,5 +11,10 @@ public enum PlayerStatus {
     /**
      * Playing.
      */
-    PLAYING
+    PLAYING,
+
+    /**
+     * Stopped.
+     */
+    STOPPED
 }
