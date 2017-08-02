@@ -29,7 +29,6 @@ public final class MediaControlClient {
      */
     public MediaControlClient(final Context context) {
         this.context = context;
-        bindService();
     }
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
