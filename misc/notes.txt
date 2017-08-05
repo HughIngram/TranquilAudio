@@ -1,13 +1,7 @@
-TODO move this file into a misc directory
-
 Current commit:
-    >Feature: Play from a choice of different files from the list
+    >Feature:
 
     >BUGS to fix in this commit:
-    -Play a (non-default) scene
-    -close the service
-    -press play from the bottom bar
-    -the wrong scene is played
 
     >NOTES:
 

@@ -69,6 +69,7 @@ public final class NotificationBuilder {
                 .setMediaSession(session.getSessionToken())
                 .setShowActionsInCompactView(0, 1);
         return new NotificationCompat.Builder(context)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(scene.getTitle())
                 .setContentText("Tap to open the app.")
                 .setSmallIcon(R.drawable.play_circle_white_24dp)
