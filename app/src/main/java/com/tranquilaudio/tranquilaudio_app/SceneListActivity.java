@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -76,9 +77,9 @@ public final class SceneListActivity extends AppCompatActivity {
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
             // activity should be in two-pane mode.
-             isTwoPane = true;
+            isTwoPane = true;
         }
-
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     private TranquilAudioApplication getTranquilApp() {
@@ -95,8 +96,9 @@ public final class SceneListActivity extends AppCompatActivity {
         public void onReceive(final Context context, final Intent intent) {
             final PlayerStatus playerStatus = (PlayerStatus) intent
                     .getSerializableExtra(
-                    AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
-            final long trackId = intent.getLongExtra(AudioPlayerService.SCENE_ID_KEY, 0);
+                            AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
+            final long trackId = intent.getLongExtra(AudioPlayerService
+                    .SCENE_ID_KEY, 0);
             final AudioScene playingTrack = loader.getScene(trackId);
             mediaControlBar.updateView(playerStatus, playingTrack);
         }
