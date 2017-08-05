@@ -1,8 +1,10 @@
 package com.tranquilaudio.tranquilaudio_app.model;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
@@ -19,6 +21,8 @@ public final class MediaControlClient {
 
     private final Context context;
     private boolean isConnected = false;
+    private AudioScene lastPlayed;
+    private AudioSceneLoader loader;
 
     private static final String TAG = "MediaControllerClient";
 
@@ -29,9 +33,26 @@ public final class MediaControlClient {
      */
     public MediaControlClient(final Context context) {
         this.context = context;
+        loader = new AudioSceneLoaderImpl(
+                new SystemWrapperForModelImpl(context));
+        setupReceiver();
     }
 
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
+    private void setupReceiver() {
+        final BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(final Context context, final Intent intent) {
+                final long trackId = intent.getLongExtra(AudioPlayerService
+                        .SCENE_ID_KEY, 0);
+                lastPlayed = loader.getScene(trackId);
+            }
+        };
+        context.registerReceiver(receiver, new IntentFilter(
+                AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
+    }
+
+    private final ServiceConnection serviceConnection
+            = new ServiceConnection() {
         @Override
         public void onServiceConnected(
                 final ComponentName name, final IBinder service) {
@@ -108,6 +129,18 @@ public final class MediaControlClient {
         }
         // why am I calling startService instead of bindService?
         context.startService(intent);
+    }
+
+    /**
+     * Get the last played track.
+     * @return the last played track.
+     */
+    public AudioScene getLastPlayed() {
+        if (lastPlayed == null) {
+            return loader.getScene(DEFAULT_SCENE);
+        } else {
+            return lastPlayed;
+        }
     }
 
 }

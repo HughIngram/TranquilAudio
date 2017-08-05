@@ -62,6 +62,7 @@ AFTER v1:
 
 >find a better way to keep track of State (PlayerStatus, PlayingTrack...)
     -SharedPrefs?
+    -TranquilAudioApplication.lastPlayed should be moved to sharedprefs
 
 >BUG: The play button in the mcb does not have a shadow.
 ====================

@@ -2,6 +2,7 @@ package com.tranquilaudio.tranquilaudio_app;
 
 import android.app.Application;
 
+import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
 import com.tranquilaudio.tranquilaudio_app.model.MediaControlClient;
 
 /**
@@ -44,6 +45,14 @@ public final class TranquilAudioApplication extends Application {
      */
     public void closeService() {
         mediaControlClient.close();
+    }
+
+    /**
+     * Get the track which was playing when the Service was last disconnected.
+     * @return
+     */
+    public AudioScene getLastPlayed() {
+        return mediaControlClient.getLastPlayed();
     }
 
 }

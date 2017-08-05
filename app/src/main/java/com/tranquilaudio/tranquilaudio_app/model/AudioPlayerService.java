@@ -85,7 +85,8 @@ public final class AudioPlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         loader = new AudioSceneLoaderImpl(new SystemWrapperForModelImpl(this));
-        currentScene = loader.getScene(MediaControlClient.DEFAULT_SCENE);
+        currentScene = ((TranquilAudioApplication) getApplication())
+                .getLastPlayed();
     }
 
     // This gets called BEFORE the service has been bound.
@@ -95,10 +96,11 @@ public final class AudioPlayerService extends Service {
         this.mediaPlayer
                 = MediaPlayer.create(getApplicationContext(), audioTrack);
         initMediaSession();
-        loadMedia(MediaControlClient.DEFAULT_SCENE);
+        loadMedia(currentScene.getId());
         final NotificationBuilder builder = new NotificationBuilder();
         startForeground(ONGOING_NOTIFICATION_ID, builder
-                .buildNotification(PlayerStatus.PAUSED, currentScene, mediaSession, this));
+                .buildNotification(PlayerStatus.PAUSED, currentScene,
+                        mediaSession, this));
         return new Binder();
     }
 
