@@ -26,7 +26,7 @@ public final class NotificationBuilder {
      * Get a notification.
      *
      * @param playerStatus the player status to show.
-     * @param scene the playing scene.
+     * @param scene        the playing scene.
      * @param session      the MediaSession.
      * @param context      the application context.
      * @return the built notification.
@@ -61,7 +61,7 @@ public final class NotificationBuilder {
         final PendingIntent closeIntent = playbackAction(REQUEST_END, context);
         final NotificationCompat.Action closeAction
                 = new NotificationCompat.Action.Builder(
-                        R.drawable.ic_close_black_24dp,
+                R.drawable.ic_close_black_24dp,
                 "close", closeIntent).build();
 
         final NotificationCompat.MediaStyle notificationStyle
@@ -83,25 +83,25 @@ public final class NotificationBuilder {
 
     private PendingIntent playbackAction(final int actionNumber,
                                          final Context context) {
-        final Intent playbackIntent = new Intent();
+        final Intent playbackIntent
+                = new Intent(context, AudioPlayerService.class);
         switch (actionNumber) {
             case REQUEST_PLAY:
-                playbackIntent.setClass(context, AudioPlayerService.class);
                 playbackIntent.setAction(AudioPlayerService.RESUME_ACTION);
                 break;
             case REQUEST_PAUSE:
-                playbackIntent.setClass(context, AudioPlayerService.class);
                 playbackIntent.setAction(AudioPlayerService.PAUSE_ACTION);
                 break;
             case REQUEST_END:
-                playbackIntent.setClass(context, AudioPlayerService.class);
                 playbackIntent.setAction(AudioPlayerService.CLOSE_ACTION);
                 return PendingIntent.getService(
-                        context, actionNumber, playbackIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                        context, actionNumber, playbackIntent, PendingIntent
+                                .FLAG_CANCEL_CURRENT);
             default:
                 return null;
         }
         return PendingIntent.getService(
-                context, actionNumber, playbackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                context, actionNumber, playbackIntent, PendingIntent
+                        .FLAG_UPDATE_CURRENT);
     }
 }

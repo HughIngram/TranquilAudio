@@ -2,35 +2,15 @@ Current commit:
     >Feature:
 
     >BUGS to fix in this commit:
-
+        -play button in MCB flickers when starting the service
     >NOTES:
 
 ====================
 BEFORE RELEASE v1:
 
->handle audio focus
+>handle audio focus properly
 
 >loop the tracks.
-
->Implement a dark colour scheme
-    -extend from Theme.AppCompat
-    -alternate colours subtly
-    -consider contrast radio. How can I measure this?
-
->Tweak look of listview as per MD
-
->Feature: improve notification controls
-    -appears only after hitting resume
-    -has a pause / resume button
-    -has a close button
-    -lock screen control
-    -Add more metadata to notification - info about current track, album art?
-        use the MediaStyle metadata fields
-    -change lifecycle / behaviour - the notification should not show if:
-        >the context is in foreground and nothing is playing
-        >user presses 'x' button on notification
-        >user leaves context with nothing playing
-    -when the track changes, it will be necessary to publish the update.
 
 >Integrate Iconography assets
 ====================
@@ -50,7 +30,6 @@ AFTER v1:
 >sleep timer
     -fade out nicely as an option
 
-
 >is the AudioPlayerService configured to run in a different process from the activities?
     -it should be a private remote service.
 
@@ -59,6 +38,9 @@ AFTER v1:
     -TranquilAudioApplication.lastPlayed should be moved to sharedprefs
 
 >BUG: The play button in the mcb does not have a shadow.
+
+>what is the purpose of MediaSession in this app??
+    -the onPlay() callback is never reached ?
 ====================
 ====================
 
@@ -115,3 +97,24 @@ https://github.com/codepath/android_guides/wiki/Shared-Element-Activity-Transiti
         >other tracks should show a resume button to switch over to that one
         >SceneDetailFragment should behave similarly - or rather SceneListActivity
         should change its behaviour depending on isTwoPane and the active list element
+
+>Implement a dark colour scheme
+    -extend from Theme.AppCompat
+    -alternate colours subtly
+    -consider contrast radio. How can I measure this?
+
+>Feature: improve notification controls
+    -appears only after hitting resume
+    -has a pause / resume button
+    -has a close button
+    -lock screen control
+    -Add more metadata to notification - info about current track, album art?
+        use the MediaStyle metadata fields
+    -change lifecycle / behaviour - the notification should not show if:
+        >the context is in foreground and nothing is playing
+        >user presses 'x' button on notification
+        >user leaves context with nothing playing
+    -when the track changes, it will be necessary to publish the update.
+
+>Tweak look of listview as per MD
+

@@ -4,10 +4,13 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
@@ -16,6 +19,9 @@ import com.tranquilaudio.tranquilaudio_app.NotificationBuilder;
 import com.tranquilaudio.tranquilaudio_app.TranquilAudioApplication;
 
 import java.io.IOException;
+
+import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
+import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;
 
 /**
  * Wrapper class for the Android MediaPlayer.
@@ -79,7 +85,7 @@ public final class AudioPlayerService extends Service {
     private MediaSessionCompat mediaSession;
     private AudioScene currentScene;
     private AudioSceneLoader loader;
-
+    private AudioManager am;
 
     @Override
     public void onCreate() {
@@ -87,16 +93,45 @@ public final class AudioPlayerService extends Service {
         loader = new AudioSceneLoaderImpl(new SystemWrapperForModelImpl(this));
         currentScene = ((TranquilAudioApplication) getApplication())
                 .getLastPlayed();
+        initAudioManager();
+    }
+
+    private final AudioManager.OnAudioFocusChangeListener afChangeListener =
+            new AudioManager.OnAudioFocusChangeListener() {
+                public void onAudioFocusChange(final int focusChange) {
+                    switch (focusChange) {
+                        case AudioManager.AUDIOFOCUS_LOSS:
+                            // Permanent loss of audio focus
+                            mediaSession.getController()
+                                    .getTransportControls().pause();
+                            break;
+                        case AUDIOFOCUS_LOSS_TRANSIENT:
+                            mediaSession.getController().getTransportControls()
+                                    .pause();
+                            break;
+                        case AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                            mediaSession.getController().adjustVolume(
+                                    AudioManager.ADJUST_LOWER, 0);
+                            break;
+                        case AudioManager.AUDIOFOCUS_GAIN:
+                            mediaSession.getController().adjustVolume(
+                                    AudioManager.ADJUST_RAISE, 0);
+                            break;
+                        default:
+                            Log.e(TAG, "Unknown focus change received");
+                            break;
+                    }
+                }
+            };
+
+    private void initAudioManager() {
+        am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     }
 
     // This gets called BEFORE the service has been bound.
     @Override
     public IBinder onBind(final Intent intent) {
-        final Uri audioTrack = currentScene.getAudioURI(this);
-        this.mediaPlayer
-                = MediaPlayer.create(getApplicationContext(), audioTrack);
         initMediaSession();
-        loadMedia(currentScene.getId());
         final NotificationBuilder builder = new NotificationBuilder();
         startForeground(ONGOING_NOTIFICATION_ID, builder
                 .buildNotification(PlayerStatus.PAUSED, currentScene,
@@ -110,23 +145,21 @@ public final class AudioPlayerService extends Service {
         final String action = intent.getAction();
         switch (action) {
             case RESUME_ACTION:
-                playMedia();
+                mediaSession.getController().getTransportControls().play();
                 break;
             case PAUSE_ACTION:
-                pauseMedia();
+                mediaSession.getController().getTransportControls().pause();
                 break;
             case LOAD_NEW_TRACK_ACTION:
                 final Long audioTrackId = intent.getLongExtra(
                         SCENE_ID_KEY, MediaControlClient.DEFAULT_SCENE);
-                loadMedia(audioTrackId);
-                playMedia();
+                final String id = Long.toString(audioTrackId);
+                mediaSession.getController().getTransportControls()
+                        .playFromMediaId(id, null);
                 break;
             case CLOSE_ACTION:
-                pauseMedia();
-                broadcastPlayerStatus();
+                mediaSession.getController().getTransportControls().pause();
                 requestClose();
-                stopForeground(true);
-                stopSelf();
                 break;
             case REQUEST_STATUS_ACTION:
                 broadcastPlayerStatus();
@@ -137,6 +170,7 @@ public final class AudioPlayerService extends Service {
         return START_REDELIVER_INTENT;
     }
 
+    // this is necessary since the service can not unbind itself.
     private void requestClose() {
         ((TranquilAudioApplication) getApplication()).closeService();
     }
@@ -150,10 +184,15 @@ public final class AudioPlayerService extends Service {
         if (mediaSessionManager != null) {
             return;
         }
+        final Uri audioTrack = currentScene.getAudioURI(this);
+        this.mediaPlayer
+                = MediaPlayer.create(getApplicationContext(), audioTrack);
         mediaSessionManager = (MediaSessionManager)
                 getSystemService(Context.MEDIA_SESSION_SERVICE);
         mediaSession = new MediaSessionCompat(
                 getApplicationContext(), "AudioPlayer");
+        mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS
+                | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setActive(true);
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
@@ -169,31 +208,44 @@ public final class AudioPlayerService extends Service {
             }
 
             @Override
-            public void onStop() {
-                super.onStop();
-                // removeNotification()
-                // stopSelf()
+            public void onPlayFromMediaId(
+                    final String mediaId, final Bundle extras) {
+                loadMedia(Long.parseLong(mediaId));
+                playMedia();
+                super.onPlayFromMediaId(mediaId, extras);
             }
+
         });
     }
 
     private void pauseMedia() {
         mediaPlayer.pause();
         publishResult();
+        am.abandonAudioFocus(afChangeListener);
     }
 
     // i.e. resume
     private void playMedia() {
-        mediaPlayer.start();
-        publishResult();
+        final int result = am.requestAudioFocus(afChangeListener,
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mediaPlayer.start();
+            publishResult();
+        } else {
+            Log.e(TAG, "Audio focus not granted");
+        }
     }
 
     @Override
     public boolean onUnbind(final Intent intent) {
         stopForeground(true);
+        mediaSession.setActive(false);
+        mediaSession.release();
         mediaPlayer.stop();
         mediaPlayer.release();
+        mediaPlayer = null;
         mediaSessionManager = null;
+        broadcastPlayerStatus();
         stopSelf();
         return super.onUnbind(intent);
     }
@@ -210,7 +262,6 @@ public final class AudioPlayerService extends Service {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(getApplicationContext(), audioTrack);
             mediaPlayer.prepare();
-            publishResult();
         } catch (final IOException e) {
             throw new RuntimeException("could not load media");
         }
@@ -231,9 +282,7 @@ public final class AudioPlayerService extends Service {
         sendBroadcast(intent);
     }
 
-    // this is missing updates for the track title.
     private void updateNotification() {
-        // TODO move this guff not notificationBuilder
         final NotificationManager mNotificationManager = (NotificationManager)
                 getSystemService(Context.NOTIFICATION_SERVICE);
         final NotificationBuilder builder = new NotificationBuilder();

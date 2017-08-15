@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -35,20 +36,42 @@ public final class MediaControlClient {
         this.context = context;
         loader = new AudioSceneLoaderImpl(
                 new SystemWrapperForModelImpl(context));
-        setupReceiver();
     }
 
-    private void setupReceiver() {
-        final BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(final Context context, final Intent intent) {
-                final long trackId = intent.getLongExtra(AudioPlayerService
-                        .SCENE_ID_KEY, 0);
-                lastPlayed = loader.getScene(trackId);
-            }
-        };
-        context.registerReceiver(receiver, new IntentFilter(
+    private final BroadcastReceiver playingTrackReceiver = new
+            BroadcastReceiver() {
+                @Override
+                public void onReceive(
+                        final Context context, final Intent intent) {
+                    final long trackId = intent.getLongExtra(AudioPlayerService
+                            .SCENE_ID_KEY, 0);
+                    lastPlayed = loader.getScene(trackId);
+                }
+            };
+
+    private final BroadcastReceiver becomingNoisyReceiver = new
+            BroadcastReceiver() {
+                @Override
+                public void onReceive(final Context context, final Intent
+                        intent) {
+                    if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent
+                            .getAction())) {
+                        pause();
+                    }
+                }
+            };
+
+    private void setupReceivers() {
+        context.registerReceiver(playingTrackReceiver, new IntentFilter(
                 AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
+        final IntentFilter intentFilter = new IntentFilter(AudioManager
+                .ACTION_AUDIO_BECOMING_NOISY);
+        context.registerReceiver(becomingNoisyReceiver, intentFilter);
+    }
+
+    private void unregisterReceivers() {
+        context.unregisterReceiver(playingTrackReceiver);
+        context.unregisterReceiver(becomingNoisyReceiver);
     }
 
     private final ServiceConnection serviceConnection
@@ -59,12 +82,14 @@ public final class MediaControlClient {
             Log.d(TAG, "Service connected");
             requestStatus();
             isConnected = true;
+            setupReceivers();
         }
 
         @Override
         public void onServiceDisconnected(final ComponentName name) {
             Log.d(TAG, "Service disconnected?");
             isConnected = false;
+            unregisterReceivers();
         }
     };
 
@@ -133,6 +158,7 @@ public final class MediaControlClient {
 
     /**
      * Get the last played track.
+     *
      * @return the last played track.
      */
     public AudioScene getLastPlayed() {
