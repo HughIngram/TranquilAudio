@@ -1,5 +1,5 @@
 Current commit:
-    >Feature:
+    >Feature: Play button in SceneDetailFragment
 
     >BUGS to fix in this commit:
         -play button in MCB flickers when starting the service
@@ -7,8 +7,6 @@ Current commit:
 
 ====================
 BEFORE RELEASE v1:
-
->handle audio focus properly
 
 >loop the tracks.
 
@@ -41,12 +39,16 @@ AFTER v1:
 
 >what is the purpose of MediaSession in this app??
     -the onPlay() callback is never reached ?
+
+>eliminate code duplication in SceneDetailFragment and SceneDetailActivity.
 ====================
 ====================
 
 DONE:
 
-get the MediaPlayer service to keep playing 
+>handle audio focus properly
+
+get the MediaPlayer service to keep playing
 -rotate events
 -go to different activities
 -lock the screen

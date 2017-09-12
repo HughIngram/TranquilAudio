@@ -1,17 +1,24 @@
 package com.tranquilaudio.tranquilaudio_app;
 
-import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.tranquilaudio.tranquilaudio_app.model.AudioPlayerService;
 import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
 import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
 import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
 
 
@@ -31,7 +38,15 @@ public final class SceneDetailFragment extends Fragment {
     /**
      * The scene this fragment is presenting.
      */
-    private AudioScene mItem;
+    private AudioScene visibleScene;
+
+    private AudioScene playingScene;
+
+    private AudioSceneLoader loader;
+
+    private PlayerStatus status;
+
+    private ImageButton button;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -40,14 +55,61 @@ public final class SceneDetailFragment extends Fragment {
     public SceneDetailFragment() {
     }
 
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            final AudioSceneLoader loader = new AudioSceneLoaderImpl(
+            loader = new AudioSceneLoaderImpl(
                     new SystemWrapperForModelImpl(this.getContext()));
-            mItem = loader.getScene(getArguments().getLong(ARG_ITEM_ID));
+            visibleScene = loader.getScene(getArguments().getLong(ARG_ITEM_ID));
+        }
+        getTranquilApp().broadcastAudioPlayerServiceStatus();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerBroadcastReceiver();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getContext().unregisterReceiver(playerStatusReceiver);
+    }
+
+    private void registerBroadcastReceiver() {
+        getContext().registerReceiver(playerStatusReceiver, new IntentFilter(
+                AudioPlayerService.BROADCAST_PLAYER_STATUS_ACTION));
+    }
+
+    private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final long trackId = intent.getLongExtra(AudioPlayerService
+                    .SCENE_ID_KEY, 0);
+            playingScene = loader.getScene(trackId);
+            status = (PlayerStatus) intent.getSerializableExtra(
+                    AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
+            updatePausePlayButton();
+        }
+    };
+
+    private void updatePausePlayButton() {
+        if (visibleScene.getId() == playingScene.getId()) {
+            // user is looking at the playing track - let them pause / resume it
+            if (status == PlayerStatus.PLAYING) {
+                button.setBackground(getContext().getDrawable(
+                        android.R.drawable.ic_media_pause));
+            } else {
+                button.setBackground(getContext().getDrawable(
+                        android.R.drawable.ic_media_play));
+            }
+        } else {
+            // user is looking at a different track. Play it.
+            button.setBackground(getContext().getDrawable(android.R
+                    .drawable.ic_media_play));
         }
     }
 
@@ -58,11 +120,11 @@ public final class SceneDetailFragment extends Fragment {
         final View rootView = inflater.inflate(
                 R.layout.scene_detail, container, false);
 
-        if (mItem != null) {
+        if (visibleScene != null) {
             ((TextView) rootView.findViewById(R.id.scene_detail_body))
-                    .setText(mItem.getDetails());
+                    .setText(visibleScene.getDetails());
             ((TextView) rootView.findViewById(R.id.scene_title))
-                    .setText(mItem.getTitle());
+                    .setText(visibleScene.getTitle());
         }
 
         return rootView;
@@ -71,14 +133,40 @@ public final class SceneDetailFragment extends Fragment {
     @Override
     public void onActivityCreated(final Bundle bundle) {
         super.onActivityCreated(bundle);
-        final TextView titleView =
-                (TextView) getActivity().findViewById(R.id.scene_title);
+        final RelativeLayout headerView =
+                (RelativeLayout) getActivity().findViewById(R.id.scene_header);
+        button = (ImageButton) headerView.findViewById(R.id.btn_pause_play);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                fabClick();
+            }
+        });
         final CollapsingToolbarLayout appBarLayout
                 = (CollapsingToolbarLayout) getActivity().findViewById(R.id
                 .toolbar_layout);
         if (appBarLayout != null) {
-            titleView.setVisibility(View.GONE);
-            appBarLayout.setTitle(mItem.getTitle());
+            headerView.setVisibility(View.GONE);
+            appBarLayout.setTitle(visibleScene.getTitle());
         }
+    }
+
+    private void fabClick() {
+        if (playingScene.getId() == visibleScene.getId()) {
+            // user is looking at the playing track - let them pause / resume it
+            if (status == PlayerStatus.PLAYING) {
+                getTranquilApp().getMediaControlClient().pause();
+            } else {
+                getTranquilApp().getMediaControlClient().resume();
+            }
+        } else {
+            // user is looking at a different track. Play it.
+            getTranquilApp().getMediaControlClient().loadScene(visibleScene
+                    .getId());
+        }
+    }
+
+    private TranquilAudioApplication getTranquilApp() {
+        return (TranquilAudioApplication) getActivity().getApplication();
     }
 }
