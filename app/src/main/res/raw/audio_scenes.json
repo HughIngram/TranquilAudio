@@ -1,32 +1,38 @@
 [
-    {
-      "id":1,
-      "title":"Reigate Hill, England",
-      "details":"Recorded atop Reigate Hill, in a peaceful retreat below an Oak tree on a still summer's afternoon.",
-      "audioResource":"sound_clip_2"
-    },
-    {
-      "id":2,
-      "title":"Redhill, England",
-      "details":"description Redhill description",
-      "audioResource":"sound_clip_1"
-    },
-    {
-      "id":3,
-      "title":"Aylestone Meadows, Leicester, England",
-      "details":"description Meadows description",
-      "audioResource":"sound_clip_2"
-    },
-    {
-      "id":4,
-      "title":"Foxton Locks, Leicestershire, England",
-      "details":"description Foxton Locks description",
-      "audioResource":"sound_clip_1"
-    },
-    {
-      "id":5,
-      "title":"Box Hill, England",
-      "details":"Box Hill description description description",
-      "audioResource":"sound_clip_2"
-    }
+  {
+    "id": 1,
+    "title": "Reigate Hill, England",
+    "details": "Recorded atop Reigate Hill, in a peaceful retreat below an Oak tree on a still summer's afternoon.",
+    "audioResource": "sound_clip_2"
+  },
+  {
+    "id": 2,
+    "title": "Redhill, England",
+    "details": "description Redhill description",
+    "audioResource": "sound_clip_1"
+  },
+  {
+    "id": 3,
+    "title": "Aylestone Meadows, Leicester, England",
+    "details": "description Meadows description",
+    "audioResource": "sound_clip_2"
+  },
+  {
+    "id": 4,
+    "title": "Foxton Locks, Leicestershire, England",
+    "details": "description Foxton Locks description",
+    "audioResource": "sound_clip_1"
+  },
+  {
+    "id": 5,
+    "title": "Box Hill, England",
+    "details": "Box Hill description description description",
+    "audioResource": "sound_clip_2"
+  },
+  {
+    "id": 6,
+    "title": "test loop",
+    "details": "test loop for debugging",
+    "audioResource": "sound_clip_test"
+  }
 ]
