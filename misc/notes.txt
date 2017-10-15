@@ -52,6 +52,8 @@ AFTER v1:
     -the onPlay() callback is never reached ?
 
 >eliminate code duplication in SceneDetailFragment and SceneDetailActivity.
+
+>implement dynamic icons
 ====================
 ====================
 
