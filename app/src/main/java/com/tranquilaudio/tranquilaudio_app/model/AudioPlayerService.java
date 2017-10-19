@@ -5,7 +5,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.session.MediaSession;
 import android.media.session.MediaSessionManager;
 import android.net.Uri;
@@ -15,10 +14,19 @@ import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.mp3.Mp3Extractor;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
+import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.tranquilaudio.tranquilaudio_app.NotificationBuilder;
 import com.tranquilaudio.tranquilaudio_app.TranquilAudioApplication;
-
-import java.io.IOException;
 
 import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
 import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;
@@ -80,12 +88,12 @@ public final class AudioPlayerService extends Service {
 
     private static final String TAG = "AudioPlayerService";
 
-    private MediaPlayer mediaPlayer;
     private MediaSessionManager mediaSessionManager;
     private MediaSessionCompat mediaSession;
     private AudioScene currentScene;
     private AudioSceneLoader loader;
     private AudioManager am;
+    private SimpleExoPlayer player;
 
     @Override
     public void onCreate() {
@@ -170,7 +178,7 @@ public final class AudioPlayerService extends Service {
         return START_REDELIVER_INTENT;
     }
 
-    // this is necessary since the service can not unbind itself.
+    // this is necessary since a service can not unbind itself.
     private void requestClose() {
         ((TranquilAudioApplication) getApplication()).closeService();
     }
@@ -184,9 +192,6 @@ public final class AudioPlayerService extends Service {
         if (mediaSessionManager != null) {
             return;
         }
-        final Uri audioTrack = currentScene.getAudioURI(this);
-        this.mediaPlayer
-                = MediaPlayer.create(getApplicationContext(), audioTrack);
         mediaSessionManager = (MediaSessionManager)
                 getSystemService(Context.MEDIA_SESSION_SERVICE);
         mediaSession = new MediaSessionCompat(
@@ -194,6 +199,16 @@ public final class AudioPlayerService extends Service {
         mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS
                 | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setActive(true);
+
+        final TrackSelector trackSelector = new DefaultTrackSelector();
+        player = ExoPlayerFactory.newSimpleInstance(
+                getApplicationContext(), trackSelector);
+        player.addListener(new MyPlayerListener(this));
+        player.setRepeatMode(Player.REPEAT_MODE_ONE);
+        final Uri audioTrack = currentScene.getAudioURI(this);
+        final MediaSource source = genMediaSource(audioTrack);
+        player.prepare(source);
+
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             @Override
             public void onPlay() {
@@ -218,9 +233,28 @@ public final class AudioPlayerService extends Service {
         });
     }
 
+    private MediaSource genMediaSource(final Uri uri) {
+        final DataSpec dataSpec = new DataSpec(uri);
+        final RawResourceDataSource rawResourceDataSource
+                = new RawResourceDataSource(getApplicationContext());
+        try {
+            rawResourceDataSource.open(dataSpec);
+        } catch (RawResourceDataSource.RawResourceDataSourceException e) {
+            Log.e(TAG, "failed to open raw data src");
+        }
+        final DataSource.Factory factory = new DataSource.Factory() {
+            @Override
+            public DataSource createDataSource() {
+                return rawResourceDataSource;
+            }
+        };
+
+        return new ExtractorMediaSource(rawResourceDataSource.getUri(),
+                factory, Mp3Extractor.FACTORY, null, null);
+    }
+
     private void pauseMedia() {
-        mediaPlayer.pause();
-        publishResult();
+        player.setPlayWhenReady(false);
         am.abandonAudioFocus(afChangeListener);
     }
 
@@ -229,8 +263,7 @@ public final class AudioPlayerService extends Service {
         final int result = am.requestAudioFocus(afChangeListener,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            mediaPlayer.start();
-            publishResult();
+            player.setPlayWhenReady(true);
         } else {
             Log.e(TAG, "Audio focus not granted");
         }
@@ -241,9 +274,8 @@ public final class AudioPlayerService extends Service {
         stopForeground(true);
         mediaSession.setActive(false);
         mediaSession.release();
-        mediaPlayer.stop();
-        mediaPlayer.release();
-        mediaPlayer = null;
+        player.release();
+        player = null;
         mediaSessionManager = null;
         broadcastPlayerStatus();
         stopSelf();
@@ -258,26 +290,22 @@ public final class AudioPlayerService extends Service {
     private void loadMedia(final long audioSceneId) {
         currentScene = loader.getScene(audioSceneId);
         final Uri audioTrack = currentScene.getAudioURI(this);
-        try {
-            mediaPlayer.reset();
-            mediaPlayer.setDataSource(getApplicationContext(), audioTrack);
-            mediaPlayer.prepare();
-        } catch (final IOException e) {
-            throw new RuntimeException("could not load media");
-        }
+        final MediaSource source = genMediaSource(audioTrack);
+        player.stop();
+        player.prepare(source);
     }
 
     /**
      * Broadcasts the new status of the media player.
      */
-    private void publishResult() {
+    void publishStatus() {
         broadcastPlayerStatus();
         updateNotification();
     }
 
     private void broadcastPlayerStatus() {
         final Intent intent = new Intent(BROADCAST_PLAYER_STATUS_ACTION);
-        intent.putExtra(PLAYER_STATUS_EXTRA_KEY, getStatus());
+        intent.putExtra(PLAYER_STATUS_EXTRA_KEY, getPlayerStatus());
         intent.putExtra(SCENE_ID_KEY, getPlayingTrackID());
         sendBroadcast(intent);
     }
@@ -286,24 +314,25 @@ public final class AudioPlayerService extends Service {
         final NotificationManager mNotificationManager = (NotificationManager)
                 getSystemService(Context.NOTIFICATION_SERVICE);
         final NotificationBuilder builder = new NotificationBuilder();
-
         mNotificationManager.notify(ONGOING_NOTIFICATION_ID,
                 builder.buildNotification(
-                        getStatus(), currentScene, mediaSession, this));
+                        getPlayerStatus(), currentScene, mediaSession, this));
     }
 
-    /**
-     * Get the current status of media playback.
-     *
-     * @return the status.
-     */
-    private PlayerStatus getStatus() {
-        if (mediaPlayer == null) {
+    private PlayerStatus getPlayerStatus() {
+        if (player == null) {
             return PlayerStatus.STOPPED;
-        } else if (!mediaPlayer.isPlaying()) {
-            return PlayerStatus.PAUSED;
+        }
+        final boolean playWhenReady = player.getPlayWhenReady();
+        final int playbackState = player.getPlaybackState();
+        if (playbackState == Player.STATE_READY) {
+            if (playWhenReady) {
+                return PlayerStatus.PLAYING;
+            } else {
+                return PlayerStatus.PAUSED;
+            }
         } else {
-            return PlayerStatus.PLAYING;
+            return PlayerStatus.STOPPED; // what about STATE_BUFFERING?
         }
     }
 

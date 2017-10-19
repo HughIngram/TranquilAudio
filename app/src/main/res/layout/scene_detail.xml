@@ -1,27 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_height="match_parent"
                 android:layout_width="match_parent"
-                tools:context="com.tranquilaudio.tranquilaudio_app.SceneDetailFragment"
+                android:layout_height="match_parent"
                 android:layout_margin="16dp"
+                tools:context="com.tranquilaudio.tranquilaudio_app.SceneDetailFragment"
     >
     <!--this title will only be included when in twopane mode-->
-    <TextView
-        android:id="@+id/scene_title"
-        style="@style/AppTheme.Display1"
+    <RelativeLayout
+        android:id="@+id/scene_header"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
-        tools:text="Scene Title Goes Here."
-        />
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/btn_pause_play"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_alignParentTop="true"
+            android:backgroundTint="@color/colorAccentLight"
+            android:background="@drawable/ic_play_arrow_black_24dp" />
+
+        <TextView
+            android:id="@+id/scene_title"
+            style="@style/AppTheme.Display1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/btn_pause_play"
+            android:paddingBottom="8dp"
+            tools:text="Scene Title Goes Here."
+            />
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/scene_detail_body"
         style="@style/AppTheme.TextContentStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/scene_title"
+        android:layout_below="@id/scene_header"
         tools:text="Scene description goes here ..."
         />
 

@@ -1,18 +1,27 @@
-Current commit:
+Current branch:
     >Feature:
+        implement looping of audio files
 
-    >BUGS to fix in this commit:
-        -play button in MCB flickers when starting the service
+    >BUGS to fix in this branch:
+        -the play button flickers after the AudioPlayerService is started
+
     >NOTES:
+    ExoPlayer
+-LoopingMediaSource is not appropriate for infinite looping. Use repeat modes instead.
+-With one track only in the queue, REPEAT_MODE_ONE and REPEAT_MODE_ALL
+    should do the same thing.
 
 ====================
 BEFORE RELEASE v1:
-
->handle audio focus properly
+>BUG: SceneDetailActivity plays the wrong file on second click
 
 >loop the tracks.
 
 >Integrate Iconography assets
+
+>try FLAC with the ExoPlayer plugin
+
+>should I change to support library-v4?
 ====================
 
 AFTER v1:
@@ -41,12 +50,18 @@ AFTER v1:
 
 >what is the purpose of MediaSession in this app??
     -the onPlay() callback is never reached ?
+
+>eliminate code duplication in SceneDetailFragment and SceneDetailActivity.
+
+>implement dynamic icons
 ====================
 ====================
 
 DONE:
 
-get the MediaPlayer service to keep playing 
+>handle audio focus properly
+
+get the MediaPlayer service to keep playing
 -rotate events
 -go to different activities
 -lock the screen

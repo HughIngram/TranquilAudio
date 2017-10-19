@@ -97,7 +97,6 @@ public final class SceneDetailActivity extends AppCompatActivity {
         return (TranquilAudioApplication) getApplication();
     }
 
-
     private void fabClick() {
         if (playingScene.getId() == visibleScene.getId()) {
             // user is looking at the playing track - let them pause / resume it
