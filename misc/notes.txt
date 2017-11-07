@@ -2,7 +2,6 @@ Current branch:
     >Feature:
 
     >BUGS to fix in this branch:
-    BUG: SceneDetailActivity plays the wrong file on second click
 
     >NOTES:
 
@@ -54,6 +53,8 @@ AFTER v1:
 >set up CircleCI and GitHub icon
 
 >use a font better suited to the brand
+
+>lines separating list items
 ====================
 ====================
 
@@ -144,3 +145,7 @@ https://github.com/codepath/android_guides/wiki/Shared-Element-Activity-Transiti
 -LoopingMediaSource is not appropriate for infinite looping. Use repeat modes instead.
 -With one track only in the queue, REPEAT_MODE_ONE and REPEAT_MODE_ALL
     should do the same thing.
+
+
+    BUG: SceneDetailActivity plays the wrong file on second click
+        -on hold
