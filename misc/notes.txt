@@ -1,19 +1,15 @@
 Current branch:
     >Feature:
-        implement looping of audio files
 
     >BUGS to fix in this branch:
-        -the play button flickers after the AudioPlayerService is started
+    BUG: SceneDetailActivity plays the wrong file on second click
 
     >NOTES:
-    ExoPlayer
--LoopingMediaSource is not appropriate for infinite looping. Use repeat modes instead.
--With one track only in the queue, REPEAT_MODE_ONE and REPEAT_MODE_ALL
-    should do the same thing.
 
 ====================
 BEFORE RELEASE v1:
->BUG: SceneDetailActivity plays the wrong file on second click
+
+>Fix scaling for smaller screen sizes
 
 >loop the tracks.
 
@@ -54,6 +50,8 @@ AFTER v1:
 >eliminate code duplication in SceneDetailFragment and SceneDetailActivity.
 
 >implement dynamic icons
+
+>set up CircleCI and GitHub icon
 ====================
 ====================
 
@@ -133,3 +131,14 @@ https://github.com/codepath/android_guides/wiki/Shared-Element-Activity-Transiti
 
 >Tweak look of listview as per MD
 
+    >Feature:
+        implement looping of audio files
+
+    >BUGS to fix in this branch:
+        -the play button flickers after the AudioPlayerService is started
+
+    >NOTES:
+    ExoPlayer
+-LoopingMediaSource is not appropriate for infinite looping. Use repeat modes instead.
+-With one track only in the queue, REPEAT_MODE_ONE and REPEAT_MODE_ALL
+    should do the same thing.
