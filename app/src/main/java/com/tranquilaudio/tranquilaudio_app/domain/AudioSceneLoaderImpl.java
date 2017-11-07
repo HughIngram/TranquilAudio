@@ -1,9 +1,10 @@
-package com.tranquilaudio.tranquilaudio_app.model;
+package com.tranquilaudio.tranquilaudio_app.domain;
 
 import android.support.annotation.RawRes;
 
 import com.google.gson.Gson;
 import com.tranquilaudio.tranquilaudio_app.R;
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
 
 import java.util.ArrayList;
 import java.util.Arrays;

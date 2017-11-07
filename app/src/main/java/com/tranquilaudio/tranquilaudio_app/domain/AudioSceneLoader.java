@@ -1,4 +1,6 @@
-package com.tranquilaudio.tranquilaudio_app.model;
+package com.tranquilaudio.tranquilaudio_app.domain;
+
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.tranquilaudio.tranquilaudio_app.model;
+package com.tranquilaudio.tranquilaudio_app.domain;
 
 import android.app.NotificationManager;
 import android.app.Service;
@@ -27,6 +27,7 @@ import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.tranquilaudio.tranquilaudio_app.NotificationBuilder;
 import com.tranquilaudio.tranquilaudio_app.TranquilAudioApplication;
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
 
 import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
 import static android.media.AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK;

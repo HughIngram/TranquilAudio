@@ -12,13 +12,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.tranquilaudio.tranquilaudio_app.model.AudioPlayerService;
-import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
-import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
-import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
-import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
-import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModel;
-import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioPlayerService;
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoader;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.domain.PlayerStatus;
+import com.tranquilaudio.tranquilaudio_app.domain.SystemWrapperForModel;
+import com.tranquilaudio.tranquilaudio_app.domain.SystemWrapperForModelImpl;
 import com.tranquilaudio.tranquilaudio_app.view.MediaControlBar;
 
 import java.util.List;

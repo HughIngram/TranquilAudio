@@ -1,4 +1,4 @@
-package com.tranquilaudio.tranquilaudio_app.model;
+package com.tranquilaudio.tranquilaudio_app.domain;
 
 /**
  * Possible statuses for Media playback.

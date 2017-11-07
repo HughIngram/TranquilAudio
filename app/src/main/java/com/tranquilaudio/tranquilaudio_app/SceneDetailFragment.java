@@ -14,12 +14,12 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.tranquilaudio.tranquilaudio_app.model.AudioPlayerService;
-import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
-import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
-import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
-import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
-import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioPlayerService;
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoader;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.domain.PlayerStatus;
+import com.tranquilaudio.tranquilaudio_app.domain.SystemWrapperForModelImpl;
 
 
 /**
@@ -118,13 +118,16 @@ public final class SceneDetailFragment extends Fragment {
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(
-                R.layout.scene_detail, container, false);
+                R.layout.fragment_scene_detail, container, false);
 
         if (visibleScene != null) {
             ((TextView) rootView.findViewById(R.id.scene_detail_body))
                     .setText(visibleScene.getDetails());
             ((TextView) rootView.findViewById(R.id.scene_title))
                     .setText(visibleScene.getTitle());
+            ((TextView) rootView.findViewById(R.id.scene_location))
+                    .setText(visibleScene.getLocation());
+
         }
 
         return rootView;
@@ -134,8 +137,8 @@ public final class SceneDetailFragment extends Fragment {
     public void onActivityCreated(final Bundle bundle) {
         super.onActivityCreated(bundle);
         final RelativeLayout headerView =
-                (RelativeLayout) getActivity().findViewById(R.id.scene_header);
-        button = (ImageButton) headerView.findViewById(R.id.btn_pause_play);
+                 getActivity().findViewById(R.id.scene_header);
+        button = headerView.findViewById(R.id.btn_pause_play);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -143,7 +146,7 @@ public final class SceneDetailFragment extends Fragment {
             }
         });
         final CollapsingToolbarLayout appBarLayout
-                = (CollapsingToolbarLayout) getActivity().findViewById(R.id
+                = getActivity().findViewById(R.id
                 .toolbar_layout);
         if (appBarLayout != null) {
             headerView.setVisibility(View.GONE);

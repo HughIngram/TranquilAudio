@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="16dp"
-                tools:context="com.tranquilaudio.tranquilaudio_app.SceneDetailFragment"
-    >
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    tools:context="com.tranquilaudio.tranquilaudio_app.SceneDetailFragment">
+
     <!--this title will only be included when in twopane mode-->
     <RelativeLayout
         android:id="@+id/scene_header"
@@ -17,8 +18,8 @@
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_alignParentTop="true"
-            android:backgroundTint="@color/colorAccentLight"
-            android:background="@drawable/ic_play_arrow_black_24dp" />
+            android:background="@drawable/ic_play_arrow_black_24dp"
+            android:backgroundTint="@color/colorAccentLight"/>
 
         <TextView
             android:id="@+id/scene_title"
@@ -33,11 +34,20 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/scene_location"
+        style="@style/AppTheme.TextSubheadingStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/scene_header"
+        tools:text="Location goes here..."
+        />
+
+    <TextView
         android:id="@+id/scene_detail_body"
         style="@style/AppTheme.TextContentStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/scene_header"
+        android:layout_below="@id/scene_location"
         tools:text="Scene description goes here ..."
         />
 

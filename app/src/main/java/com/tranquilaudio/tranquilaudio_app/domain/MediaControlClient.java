@@ -1,4 +1,4 @@
-package com.tranquilaudio.tranquilaudio_app.model;
+package com.tranquilaudio.tranquilaudio_app.domain;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -9,6 +9,8 @@ import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
 
 /**
  * Handles client-side communication to the AudioPlayerService.

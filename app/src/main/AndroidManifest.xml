@@ -34,7 +34,7 @@
                 android:value="com.tranquilaudio.tranquilaudio_app.SceneListActivity" />
         </activity>
         <service
-            android:name=".model.AudioPlayerService"
+            android:name=".domain.AudioPlayerService"
             android:description="@string/service_description"
             android:exported="false"
             android:singleUser="true"/>

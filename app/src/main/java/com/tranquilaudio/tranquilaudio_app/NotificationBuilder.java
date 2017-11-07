@@ -7,9 +7,9 @@ import android.content.Intent;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
 
-import com.tranquilaudio.tranquilaudio_app.model.AudioPlayerService;
-import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
-import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioPlayerService;
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.domain.PlayerStatus;
 
 /**
  * Class to build the ongoing Notification.

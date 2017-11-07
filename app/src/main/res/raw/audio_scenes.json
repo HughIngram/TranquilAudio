@@ -1,37 +1,43 @@
 [
   {
     "id": 1,
-    "title": "Reigate Hill, England",
+    "title": "Reigate Hill",
+    "location": "England",
     "details": "Recorded atop Reigate Hill, in a peaceful retreat below an Oak tree on a still summer's afternoon.",
     "audioResource": "sound_clip_2"
   },
   {
     "id": 2,
-    "title": "Redhill, England",
+    "title": "Redhill",
+    "location": "England",
     "details": "description Redhill description",
     "audioResource": "sound_clip_1"
   },
   {
     "id": 3,
-    "title": "Aylestone Meadows, Leicester, England",
+    "title": "Aylestone Meadows",
+    "location": "Leicester, England",
     "details": "description Meadows description",
     "audioResource": "sound_clip_2"
   },
   {
     "id": 4,
-    "title": "Foxton Locks, Leicestershire, England",
+    "title": "Foxton Locks",
+    "location": "Leicestershire, England",
     "details": "description Foxton Locks description",
     "audioResource": "sound_clip_1"
   },
   {
     "id": 5,
-    "title": "Box Hill, England",
+    "title": "Box Hill",
+    "location": "England",
     "details": "Box Hill description description description",
     "audioResource": "sound_clip_2"
   },
   {
     "id": 6,
     "title": "test loop",
+    "location": "nowhere",
     "details": "test loop for debugging",
     "audioResource": "sound_clip_test"
   }

@@ -2,8 +2,8 @@ package com.tranquilaudio.tranquilaudio_app;
 
 import android.app.Application;
 
-import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
-import com.tranquilaudio.tranquilaudio_app.model.MediaControlClient;
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.domain.MediaControlClient;
 
 /**
  * Application Implementation.

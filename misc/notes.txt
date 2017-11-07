@@ -17,7 +17,7 @@ BEFORE RELEASE v1:
 
 >try FLAC with the ExoPlayer plugin
 
->should I change to support library-v4?
+>check for memory leaks
 ====================
 
 AFTER v1:
@@ -52,6 +52,8 @@ AFTER v1:
 >implement dynamic icons
 
 >set up CircleCI and GitHub icon
+
+>use a font better suited to the brand
 ====================
 ====================
 

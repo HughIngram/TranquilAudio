@@ -13,13 +13,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
-import com.tranquilaudio.tranquilaudio_app.model.AudioPlayerService;
-import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
-import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoader;
-import com.tranquilaudio.tranquilaudio_app.model.AudioSceneLoaderImpl;
-import com.tranquilaudio.tranquilaudio_app.model.MediaControlClient;
-import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
-import com.tranquilaudio.tranquilaudio_app.model.SystemWrapperForModelImpl;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioPlayerService;
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoader;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoaderImpl;
+import com.tranquilaudio.tranquilaudio_app.domain.MediaControlClient;
+import com.tranquilaudio.tranquilaudio_app.domain.PlayerStatus;
+import com.tranquilaudio.tranquilaudio_app.domain.SystemWrapperForModelImpl;
 import com.tranquilaudio.tranquilaudio_app.view.MediaControlBar;
 
 /**
@@ -42,9 +42,9 @@ public final class SceneDetailActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scene_detail);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        final Toolbar toolbar = findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {

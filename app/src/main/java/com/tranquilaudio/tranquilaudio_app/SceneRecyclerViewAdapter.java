@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
 
 import java.util.List;
 

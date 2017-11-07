@@ -7,8 +7,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.tranquilaudio.tranquilaudio_app.R;
-import com.tranquilaudio.tranquilaudio_app.model.AudioScene;
-import com.tranquilaudio.tranquilaudio_app.model.PlayerStatus;
+import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.domain.PlayerStatus;
 
 /**
  * The bottom bar which controls Media playback.
