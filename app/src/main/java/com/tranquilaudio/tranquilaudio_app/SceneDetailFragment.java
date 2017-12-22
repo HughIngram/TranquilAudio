@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,7 +47,7 @@ public final class SceneDetailFragment extends Fragment {
 
     private PlayerStatus status;
 
-    private ImageButton button;
+    private ImageButton btnNextToTitle;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -100,15 +101,15 @@ public final class SceneDetailFragment extends Fragment {
         if (visibleScene.getId() == playingScene.getId()) {
             // user is looking at the playing track - let them pause / resume it
             if (status == PlayerStatus.PLAYING) {
-                button.setBackground(getContext().getDrawable(
+                btnNextToTitle.setBackground(getContext().getDrawable(
                         android.R.drawable.ic_media_pause));
             } else {
-                button.setBackground(getContext().getDrawable(
+                btnNextToTitle.setBackground(getContext().getDrawable(
                         android.R.drawable.ic_media_play));
             }
         } else {
             // user is looking at a different track. Play it.
-            button.setBackground(getContext().getDrawable(android.R
+            btnNextToTitle.setBackground(getContext().getDrawable(android.R
                     .drawable.ic_media_play));
         }
     }
@@ -134,20 +135,19 @@ public final class SceneDetailFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(final Bundle bundle) {
-        super.onActivityCreated(bundle);
-        final RelativeLayout headerView =
-                 getActivity().findViewById(R.id.scene_header);
-        button = headerView.findViewById(R.id.btn_pause_play);
-        button.setOnClickListener(new View.OnClickListener() {
+    public void onViewCreated(final View view,
+                              final @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final RelativeLayout headerView = view.findViewById(R.id.scene_header);
+        btnNextToTitle = headerView.findViewById(R.id.btn_pause_play);
+        btnNextToTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 fabClick();
             }
         });
         final CollapsingToolbarLayout appBarLayout
-                = getActivity().findViewById(R.id
-                .toolbar_layout);
+                = getActivity().findViewById(R.id.toolbar_layout);
         if (appBarLayout != null) {
             headerView.setVisibility(View.GONE);
             appBarLayout.setTitle(visibleScene.getTitle());
