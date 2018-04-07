@@ -3,14 +3,14 @@ Current branch:
 
     >BUGS to fix in this branch:
 
+plan:
+
     >NOTES:
 
 ====================
 BEFORE RELEASE v1:
 
 >Fix scaling for smaller screen sizes
-
->loop the tracks.
 
 >Integrate Iconography assets
 
@@ -55,6 +55,10 @@ AFTER v1:
 >use a font better suited to the brand
 
 >lines separating list items
+
+>support moving app to sd card
+
+>support playback control from headset
 ====================
 ====================
 
@@ -149,3 +153,4 @@ https://github.com/codepath/android_guides/wiki/Shared-Element-Activity-Transiti
 
     BUG: SceneDetailActivity plays the wrong file on second click
         -on hold
+-flashing pause / play icon

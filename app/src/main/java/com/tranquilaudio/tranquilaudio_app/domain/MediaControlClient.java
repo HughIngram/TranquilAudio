@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -143,8 +144,7 @@ public final class MediaControlClient {
         if (!isConnected) {
             bindService();
         }
-        publishMediaControlIntent(
-                AudioPlayerService.LOAD_NEW_TRACK_ACTION, sceneId);
+        publishMediaControlIntent(AudioPlayerService.LOAD_NEW_TRACK_ACTION, sceneId);
     }
 
     private void publishMediaControlIntent(final String goalAction,
@@ -154,8 +154,11 @@ public final class MediaControlClient {
         if (goalAction.equals(AudioPlayerService.LOAD_NEW_TRACK_ACTION)) {
             intent.putExtra(AudioPlayerService.SCENE_ID_KEY, sceneId);
         }
-        // why am I calling startService instead of bindService?
-        context.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && AudioPlayerService.shouldServiceForeground(goalAction)) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
     }
 
     /**

@@ -141,12 +141,9 @@ public final class AudioPlayerService extends Service {
     @Override
     public IBinder onBind(final Intent intent) {
         initMediaSession();
-        final NotificationBuilder builder = new NotificationBuilder();
-        startForeground(ONGOING_NOTIFICATION_ID, builder
-                .buildNotification(PlayerStatus.PAUSED, currentScene,
-                        mediaSession, this));
         return new Binder();
     }
+
 
     @Override
     public int onStartCommand(final Intent intent, final int flags,
@@ -176,7 +173,22 @@ public final class AudioPlayerService extends Service {
             default:
                 throw new RuntimeException("unrecognised action");
         }
+        if (shouldServiceForeground(action)) moveToForeground();
         return START_REDELIVER_INTENT;
+    }
+
+    /**
+     * Check if the given action should be followed by moving the Service to the foreground.
+     */
+    public static Boolean shouldServiceForeground(final String action) {
+        return action.equals(PAUSE_ACTION) || action.equals(RESUME_ACTION) || action.equals(LOAD_NEW_TRACK_ACTION);
+    }
+
+    private void moveToForeground() {
+        final NotificationBuilder builder = new NotificationBuilder();
+        startForeground(ONGOING_NOTIFICATION_ID, builder
+                .buildNotification(PlayerStatus.PAUSED, currentScene,
+                        mediaSession, this));
     }
 
     // this is necessary since a service can not unbind itself.
