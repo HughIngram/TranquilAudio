@@ -324,16 +324,17 @@ public final class AudioPlayerService extends Service {
         if (player == null) {
             return PlayerStatus.STOPPED;
         }
-        final boolean playWhenReady = player.getPlayWhenReady();
         final int playbackState = player.getPlaybackState();
-        if (playbackState == Player.STATE_READY) {
-            if (playWhenReady) {
+        if (playbackState == Player.STATE_READY || playbackState == Player.STATE_BUFFERING) {
+            if (player.getPlayWhenReady()) {
                 return PlayerStatus.PLAYING;
             } else {
                 return PlayerStatus.PAUSED;
             }
+        } else if (playbackState == Player.STATE_IDLE) {
+            return PlayerStatus.PAUSED;
         } else {
-            return PlayerStatus.STOPPED; // what about STATE_BUFFERING?
+            return PlayerStatus.STOPPED;
         }
     }
 

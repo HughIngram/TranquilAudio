@@ -36,9 +36,8 @@ public final class MediaControlBar {
      */
     public MediaControlBar(final View barView, final Context context,
                            final Callbacks callbacks) {
-        this.pausePlayButton
-                = (ImageButton) barView.findViewById(MEDIA_BUTTON_ID);
-        this.mediaTitle = (TextView) barView.findViewById(MEDIA_TITLE_ID);
+        this.pausePlayButton = barView.findViewById(MEDIA_BUTTON_ID);
+        this.mediaTitle = barView.findViewById(MEDIA_TITLE_ID);
         this.context = context;
         this.callbacks = callbacks;
         setUpOnClick();
@@ -46,11 +45,10 @@ public final class MediaControlBar {
 
     /**
      * Update the state of the media control bar.
-     * @param status yayay
-     * @param scene ayaya
+     * @param status the new status.
+     * @param scene the new Scene.
      */
-    public void updateView(
-            final PlayerStatus status, final AudioScene scene) {
+    public void updateView(final PlayerStatus status, final AudioScene scene) {
         setStatus(status);
         setAudioScene(scene);
         playerStatus = status;
@@ -81,10 +79,8 @@ public final class MediaControlBar {
             public void onClick(final View v) {
                 if (playerStatus == PlayerStatus.PLAYING) {
                     callbacks.pause();
-                    setStatus(PlayerStatus.PAUSED);
                 } else {
                     callbacks.resume();
-                    setStatus(PlayerStatus.PLAYING);
                 }
             }
         });
