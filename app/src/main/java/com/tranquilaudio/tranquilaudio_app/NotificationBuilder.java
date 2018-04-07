@@ -1,11 +1,15 @@
 package com.tranquilaudio.tranquilaudio_app;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
 
 import com.tranquilaudio.tranquilaudio_app.domain.AudioPlayerService;
 import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
@@ -15,7 +19,6 @@ import com.tranquilaudio.tranquilaudio_app.domain.PlayerStatus;
  * Class to build the ongoing Notification.
  */
 public final class NotificationBuilder {
-
 
     // corresponding request codes for the above action strings
     private static final int REQUEST_PLAY = 11;
@@ -64,18 +67,18 @@ public final class NotificationBuilder {
                 R.drawable.ic_close_black_24dp,
                 "close", closeIntent).build();
 
-        final NotificationCompat.MediaStyle notificationStyle
-                = new NotificationCompat.MediaStyle()
+        MediaStyle mediaStyle = new MediaStyle()
                 .setMediaSession(session.getSessionToken())
                 .setShowActionsInCompactView(0, 1);
-        return new NotificationCompat.Builder(context)
+        initChannels(context);
+        return new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setContentTitle(scene.getTitle())
                 .setContentText("Tap to open the app.")
                 .setSmallIcon(R.drawable.play_circle_white_24dp)
                 .setContentIntent(pendingIntent)
                 .setTicker("Test ticker test")
-                .setStyle(notificationStyle)
+                .setStyle(mediaStyle)
                 .addAction(pausePlayAction)
                 .addAction(closeAction)
                 .build();
@@ -104,4 +107,21 @@ public final class NotificationBuilder {
                 context, actionNumber, playbackIntent, PendingIntent
                         .FLAG_UPDATE_CURRENT);
     }
+
+    public void initChannels(Context context) {
+        if (Build.VERSION.SDK_INT < 26) {
+            return;
+        }
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID, CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT);
+        channel.setDescription("Channel description");
+        notificationManager.createNotificationChannel(channel);
+    }
+
+    private static String CHANNEL_ID = "this is a channel id";
+    private static String CHANNEL_NAME = "Tranquil Audio";
+
 }
