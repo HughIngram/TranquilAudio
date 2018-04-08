@@ -10,7 +10,7 @@ plan:
 ====================
 BEFORE RELEASE v1:
 
->Fix scaling for smaller screen sizes
+>fix package name
 
 >Integrate Iconography assets
 
@@ -154,3 +154,5 @@ https://github.com/codepath/android_guides/wiki/Shared-Element-Activity-Transiti
     BUG: SceneDetailActivity plays the wrong file on second click
         -on hold
 -flashing pause / play icon
+>Fix scaling for smaller screen sizes
+

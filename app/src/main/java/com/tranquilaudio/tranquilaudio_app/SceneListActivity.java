@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,13 +11,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.tranquilaudio.tranquilaudio_app.domain.AudioPlayerService;
 import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioPlayerService;
 import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoader;
 import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoaderImpl;
 import com.tranquilaudio.tranquilaudio_app.domain.PlayerStatus;
 import com.tranquilaudio.tranquilaudio_app.domain.SystemWrapperForModel;
 import com.tranquilaudio.tranquilaudio_app.domain.SystemWrapperForModelImpl;
+import com.tranquilaudio.tranquilaudio_app.view.ActivityUtils;
 import com.tranquilaudio.tranquilaudio_app.view.MediaControlBar;
 
 import java.util.List;
@@ -79,7 +79,7 @@ public final class SceneListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             isTwoPane = true;
         }
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        ActivityUtils.initActivity(this);
     }
 
     private TranquilAudioApplication getTranquilApp() {

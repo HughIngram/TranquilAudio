@@ -4,22 +4,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
-import com.tranquilaudio.tranquilaudio_app.domain.AudioPlayerService;
 import com.tranquilaudio.tranquilaudio_app.data.AudioScene;
+import com.tranquilaudio.tranquilaudio_app.domain.AudioPlayerService;
 import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoader;
 import com.tranquilaudio.tranquilaudio_app.domain.AudioSceneLoaderImpl;
 import com.tranquilaudio.tranquilaudio_app.domain.MediaControlClient;
 import com.tranquilaudio.tranquilaudio_app.domain.PlayerStatus;
 import com.tranquilaudio.tranquilaudio_app.domain.SystemWrapperForModelImpl;
+import com.tranquilaudio.tranquilaudio_app.view.ActivityUtils;
 import com.tranquilaudio.tranquilaudio_app.view.MediaControlBar;
 
 /**
@@ -90,7 +90,7 @@ public final class SceneDetailActivity extends AppCompatActivity {
                     .add(R.id.scene_detail_container, fragment)
                     .commit();
         }
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        ActivityUtils.initActivity(this);
     }
 
     private TranquilAudioApplication getTranquilApp() {
@@ -107,8 +107,7 @@ public final class SceneDetailActivity extends AppCompatActivity {
             }
         } else {
             // user is looking at a different track. Play it.
-            getTranquilApp().getMediaControlClient().loadScene(visibleScene
-                    .getId());
+            getTranquilApp().getMediaControlClient().loadScene(visibleScene.getId());
         }
     }
 
@@ -127,8 +126,7 @@ public final class SceneDetailActivity extends AppCompatActivity {
     private BroadcastReceiver playerStatusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            final long trackId = intent.getLongExtra(AudioPlayerService
-                    .SCENE_ID_KEY, 0);
+            final long trackId = intent.getLongExtra(AudioPlayerService.SCENE_ID_KEY, 0);
             playingScene = loader.getScene(trackId);
             status = (PlayerStatus) intent.getSerializableExtra(
                     AudioPlayerService.PLAYER_STATUS_EXTRA_KEY);
@@ -147,11 +145,9 @@ public final class SceneDetailActivity extends AppCompatActivity {
         if (visibleScene.getId() == playingScene.getId()) {
             // user is looking at the playing track - let them pause / resume it
             if (status == PlayerStatus.PLAYING) {
-                fab.setImageDrawable(getDrawable(
-                        android.R.drawable.ic_media_pause));
+                fab.setImageDrawable(getDrawable(android.R.drawable.ic_media_pause));
             } else {
-                fab.setImageDrawable(getDrawable(
-                        android.R.drawable.ic_media_play));
+                fab.setImageDrawable(getDrawable(android.R.drawable.ic_media_play));
             }
         } else {
             // user is looking at a different track. Play it.

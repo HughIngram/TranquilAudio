@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,7 +121,6 @@ public final class SceneDetailFragment extends Fragment {
                              final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(
                 R.layout.fragment_scene_detail, container, false);
-
         if (visibleScene != null) {
             ((TextView) rootView.findViewById(R.id.scene_detail_body))
                     .setText(visibleScene.getDetails());
@@ -151,8 +151,17 @@ public final class SceneDetailFragment extends Fragment {
         if (appBarLayout != null) {
             headerView.setVisibility(View.GONE);
             appBarLayout.setTitle(visibleScene.getTitle());
+            disableScrolling();
         }
     }
+
+
+    private void disableScrolling() {
+        // disable scrolling so the action bar does not collapse
+        final View fooView = getActivity().findViewById(R.id.scene_detail_container);
+        ViewCompat.setNestedScrollingEnabled(fooView, false);
+    }
+
 
     private void fabClick() {
         if (playingScene.getId() == visibleScene.getId()) {
